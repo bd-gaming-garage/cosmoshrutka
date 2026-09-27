@@ -1,0 +1,265 @@
+root = true
+
+# ============================================================
+# Google C# Style
+# https://google.github.io/styleguide/csharp-style.html
+# ============================================================
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Google: 100-column limit
+max_line_length = 100
+
+
+[*.cs]
+
+# ============================================================
+# INDENTATION
+# Google: 2 spaces, no tabs
+# ============================================================
+
+indent_style = space
+indent_size = 2
+tab_width = 2
+
+csharp_indent_block_contents = true
+csharp_indent_braces = false
+csharp_indent_case_contents = true
+csharp_indent_case_contents_when_block = true
+csharp_indent_switch_labels = true
+csharp_indent_labels = one_less_than_current
+
+
+# ============================================================
+# BRACES
+#
+# Google:
+#
+# if (condition) {
+#   Foo();
+# } else {
+#   Bar();
+# }
+#
+# ============================================================
+
+# { stays on the same line
+csharp_new_line_before_open_brace = none
+
+# } else {
+csharp_new_line_before_else = false
+
+# } catch {
+csharp_new_line_before_catch = false
+
+# } finally {
+csharp_new_line_before_finally = false
+
+# Always use braces
+csharp_prefer_braces = true:warning
+
+
+# ============================================================
+# SPACING
+# ============================================================
+
+# if (foo)
+# for (...)
+# while (...)
+csharp_space_after_keywords_in_control_flow_statements = true
+
+# Foo(a, b)
+csharp_space_after_comma = true
+csharp_space_before_comma = false
+
+# Foo(a)
+# NOT Foo( a )
+csharp_space_between_parentheses = false
+
+# a + b
+# a == b
+csharp_space_around_binary_operators = before_and_after
+
+# Foo();
+csharp_space_between_method_call_name_and_opening_parenthesis = false
+
+# void Foo(int x)
+csharp_space_between_method_declaration_name_and_open_parenthesis = false
+
+
+# ============================================================
+# USING DIRECTIVES
+#
+# using System;
+# using System.Collections.Generic;
+# using UnityEngine;
+#
+# namespace Foo {
+# }
+# ============================================================
+
+csharp_using_directive_placement = outside_namespace:warning
+
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = false
+
+
+# ============================================================
+# var
+#
+# Google:
+# use var when the type is obvious / unimportant.
+#
+# var player = GetPlayer();
+# Rigidbody body = GetComponent<Rigidbody>();
+# int count = 10;
+#
+# EditorConfig can't represent Google's rule perfectly,
+# this is the closest useful approximation.
+# ============================================================
+
+csharp_style_var_for_built_in_types = false:suggestion
+csharp_style_var_when_type_is_apparent = true:suggestion
+csharp_style_var_elsewhere = false:suggestion
+
+
+# ============================================================
+# LANGUAGE KEYWORDS
+#
+# int instead of Int32
+# string instead of String
+# ============================================================
+
+dotnet_style_predefined_type_for_locals_parameters_members = true:suggestion
+dotnet_style_predefined_type_for_member_access = true:suggestion
+
+
+# ============================================================
+# NAMING STYLES
+# ============================================================
+
+# PascalCase
+dotnet_naming_style.pascal_case.capitalization = pascal_case
+
+# camelCase
+dotnet_naming_style.camel_case.capitalization = camel_case
+
+# _camelCase
+dotnet_naming_style.underscore_camel_case.required_prefix = _
+dotnet_naming_style.underscore_camel_case.capitalization = camel_case
+
+# IPascalCase
+dotnet_naming_style.interface_style.required_prefix = I
+dotnet_naming_style.interface_style.capitalization = pascal_case
+
+
+# ============================================================
+# TYPES: PascalCase
+#
+# class PlayerController
+# struct PlayerState
+# enum PlayerMode
+# delegate void PlayerHandler(...)
+# ============================================================
+
+dotnet_naming_symbols.types.applicable_kinds = class, struct, enum, delegate
+dotnet_naming_symbols.types.applicable_accessibilities = *
+
+dotnet_naming_rule.types_pascal_case.symbols = types
+dotnet_naming_rule.types_pascal_case.style = pascal_case
+dotnet_naming_rule.types_pascal_case.severity = warning
+
+
+# ============================================================
+# INTERFACES: IPascalCase
+#
+# interface IMovementController
+# ============================================================
+
+dotnet_naming_symbols.interfaces.applicable_kinds = interface
+dotnet_naming_symbols.interfaces.applicable_accessibilities = *
+
+dotnet_naming_rule.interfaces_begin_with_i.symbols = interfaces
+dotnet_naming_rule.interfaces_begin_with_i.style = interface_style
+dotnet_naming_rule.interfaces_begin_with_i.severity = warning
+
+
+# ============================================================
+# METHODS: PascalCase
+#
+# void MovePlayer()
+# ============================================================
+
+dotnet_naming_symbols.methods.applicable_kinds = method, local_function
+dotnet_naming_symbols.methods.applicable_accessibilities = *
+
+dotnet_naming_rule.methods_pascal_case.symbols = methods
+dotnet_naming_rule.methods_pascal_case.style = pascal_case
+dotnet_naming_rule.methods_pascal_case.severity = warning
+
+
+# ============================================================
+# PUBLIC FIELDS / PROPERTIES / EVENTS: PascalCase
+#
+# public int PlayerCount;
+# public int Health { get; }
+# ============================================================
+
+dotnet_naming_symbols.public_members.applicable_kinds = field, property, event
+dotnet_naming_symbols.public_members.applicable_accessibilities = public
+
+dotnet_naming_rule.public_members_pascal_case.symbols = public_members
+dotnet_naming_rule.public_members_pascal_case.style = pascal_case
+dotnet_naming_rule.public_members_pascal_case.severity = warning
+
+
+# ============================================================
+# NON-PUBLIC FIELDS / PROPERTIES: _camelCase
+#
+# private int _health;
+# protected float _speed;
+# internal bool _enabled;
+#
+# IMPORTANT:
+# Google does NOT use s_ for static fields.
+# static/readonly/const do not change the naming convention.
+# ============================================================
+
+dotnet_naming_symbols.non_public_fields_and_properties.applicable_kinds = field, property
+dotnet_naming_symbols.non_public_fields_and_properties.applicable_accessibilities = private, protected, internal, protected_internal, private_protected
+
+dotnet_naming_rule.non_public_fields_and_properties_underscore.symbols = non_public_fields_and_properties
+dotnet_naming_rule.non_public_fields_and_properties_underscore.style = underscore_camel_case
+dotnet_naming_rule.non_public_fields_and_properties_underscore.severity = warning
+
+
+# ============================================================
+# PARAMETERS: camelCase
+#
+# void Move(float moveSpeed)
+# ============================================================
+
+dotnet_naming_symbols.parameters.applicable_kinds = parameter
+dotnet_naming_symbols.parameters.applicable_accessibilities = *
+
+dotnet_naming_rule.parameters_camel_case.symbols = parameters
+dotnet_naming_rule.parameters_camel_case.style = camel_case
+dotnet_naming_rule.parameters_camel_case.severity = warning
+
+
+# ============================================================
+# LOCALS: camelCase
+#
+# int playerCount = 0;
+# ============================================================
+
+dotnet_naming_symbols.locals.applicable_kinds = local
+dotnet_naming_symbols.locals.applicable_accessibilities = local
+
+dotnet_naming_rule.locals_camel_case.symbols = locals
+dotnet_naming_rule.locals_camel_case.style = camel_case
+dotnet_naming_rule.locals_camel_case.severity = warning
