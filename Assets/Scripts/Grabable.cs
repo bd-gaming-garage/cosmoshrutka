@@ -8,7 +8,10 @@ public class Grabable : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     [SerializeField] private CursorHand hand;
     [SerializeField] private int value;
     private RectTransform _rt;
-    
+
+    [SerializeField] private string pickSound = null;
+    [SerializeField] private string dropSound = null;
+
     void Awake()
     {
         _rt = GetComponent<RectTransform>();
@@ -45,10 +48,19 @@ public class Grabable : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public void Grab() {
         _isGrabbed = true;
+
+        if (pickSound != null)
+            AudioManager.Instance.Play(pickSound);
+
+
     }
 
     public void Ungrab() {
         if (!_isGrabbed) return;
         _isGrabbed = false;
+
+
+        if (dropSound != null)
+            AudioManager.Instance.Play(dropSound);
     }
 }
