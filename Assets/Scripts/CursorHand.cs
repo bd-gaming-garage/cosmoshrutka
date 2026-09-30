@@ -4,29 +4,19 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(RectTransform))]
 public class CursorHand : MonoBehaviour
 {
-    RectTransform rt;
-    RectTransform parentRect;
-    Canvas canvas;
-
     public bool isGrabbing = false;
     [SerializeField] private GameObject grabbedObj;
     private Vector2 _handPos;
     private float _catchUp;
     [SerializeField] private float catchUpTime = 0.15f;
 
-
-    void Awake()
-    {
-        rt = GetComponent<RectTransform>();
-        canvas = GetComponentInParent<Canvas>();
-        parentRect = canvas.GetComponent<RectTransform>();
-    }
+    [SerializeField] private GameObject steeringWheel;
 
     void LateUpdate()
     {
         Vector2 mousePos = Mouse.current.position.ReadValue();
 
-        if (isGrabbing)
+        if (isGrabbing && grabbedObj == steeringWheel)
         {
             _handPos = transform.position;
             _catchUp = 1f;
@@ -43,22 +33,21 @@ public class CursorHand : MonoBehaviour
         {
             transform.position = mousePos;
         }
-
-        if (isGrabbing) {
-            grabbedObj.transform.position = transform.position;
-        }
     }
 
     public void Grab(GameObject obj) {
         if (isGrabbing) return;
 
-        isGrabbing = true;
         grabbedObj = obj;
+        isGrabbing = true;
     }
 
     public void Ungrab() {
         if (!isGrabbing) return;
 
         isGrabbing = false;
+
+        if (grabbedObj != null && grabbedObj != steeringWheel)
+            grabbedObj.GetComponent<Grabable>().Ungrab();
     }
 }

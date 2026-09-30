@@ -68,7 +68,7 @@ public class SteeringWheel : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
 
         _wheelrt.localRotation = Quaternion.Euler(0, 0, _currentAngle);
 
-        cursor.GetComponent<CursorHand>().isGrabbing = true;
+        cursor.GetComponent<CursorHand>().Grab(gameObject);
         cursor.transform.position = _wheelrt.TransformPoint(_grabPoint);
 
         _lastMousePos = mousePos;
@@ -96,6 +96,6 @@ public class SteeringWheel : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
         Mouse.current.WarpCursorPosition((Vector2) _wheelrt.TransformPoint(_grabPoint) + _lastDeltaPos.normalized * math.min(_lastDelta, 10));
 
         _isGrabbed = false;
-        cursor.GetComponent<CursorHand>().isGrabbing = false;
+        cursor.GetComponent<CursorHand>().Ungrab();
     }
 }
