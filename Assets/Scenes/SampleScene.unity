@@ -1036,12 +1036,12 @@ MonoBehaviour:
   - name: PickDollar
     clip: {fileID: 8300000, guid: 1bf2475ffcbf29640b2f875a1ba2b294, type: 3}
     volume: 1
-    pitch: 0
+    pitch: 1
     loop: 0
   - name: DropDollar
     clip: {fileID: 8300000, guid: 05514b465fc4c364988d6f8315f84f96, type: 3}
     volume: 1
-    pitch: 0
+    pitch: 1
     loop: 0
 --- !u!1 &1402908563
 GameObject:
