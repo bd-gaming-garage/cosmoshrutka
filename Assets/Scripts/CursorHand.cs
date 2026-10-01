@@ -4,6 +4,8 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(RectTransform))]
 public class CursorHand : MonoBehaviour
 {
+    public static CursorHand Instance;
+
     public bool isGrabbing = false;
     [SerializeField] private GameObject grabbedObj;
     private Vector2 _handPos;
@@ -11,6 +13,11 @@ public class CursorHand : MonoBehaviour
     [SerializeField] private float catchUpTime = 0.15f;
 
     [SerializeField] private GameObject steeringWheel;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     void LateUpdate()
     {

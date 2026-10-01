@@ -74,8 +74,6 @@ public class AudioManager : MonoBehaviour
         src.pitch = sound.pitch;
         src.loop = sound.loop;
         src.Play();
-        Debug.Log($"pos={src.transform.position}, listenerVol={AudioListener.volume}, spatial={src.spatialBlend}, vol={src.volume}, clip={src.clip?.name}");
-        Debug.Log($"isPlaying={src.isPlaying}, mute={src.mute}, pause={AudioListener.pause}, listeners={FindObjectsOfType<AudioListener>().Length}");
     }
 
     public void Stop(string name)

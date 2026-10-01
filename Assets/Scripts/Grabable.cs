@@ -20,8 +20,7 @@ public class Grabable : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     void Start()
     {
-        if (hand == null)
-            hand = GameObject.FindGameObjectWithTag("CursorHand").GetComponent<CursorHand>();
+        hand = CursorHand.Instance;
     }
 
     private void LateUpdate()
@@ -32,10 +31,12 @@ public class Grabable : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public void OnPointerDown(PointerEventData e)
     {
+        DetachFromPassengerHand();
+
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             _rt, e.position, e.pressEventCamera, out Vector2 local);
 
-        localPoint = local;
+        localPoint = transform.TransformVector(local);
 
         hand.Grab(gameObject);
         Grab();
@@ -51,8 +52,6 @@ public class Grabable : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
         if (pickSound != null)
             AudioManager.Instance.Play(pickSound);
-
-
     }
 
     public void Ungrab() {
@@ -62,5 +61,23 @@ public class Grabable : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
         if (dropSound != null)
             AudioManager.Instance.Play(dropSound);
+    }
+
+    private void DetachFromPassengerHand()
+    {
+        Transform parent = transform.parent;
+        if (parent == null) return;
+
+        // проверяем, есть ли PassengerHand у родителя или выше по иерархии
+        bool insidePassengerHand =
+            parent.GetComponentInParent<PassengerHand>() != null;
+
+        if (!insidePassengerHand) return;
+
+        var canvas = GetComponentInParent<Canvas>();
+        Transform target = canvas != null ? canvas.transform : null;
+
+        // worldPositionStays = true — позиция/поворот/масштаб сохранятся
+        transform.SetParent(target, true);
     }
 }
