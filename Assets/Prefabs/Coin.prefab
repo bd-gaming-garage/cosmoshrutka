@@ -64,6 +64,10 @@ MonoBehaviour:
   value: 0
   pickSound: 
   dropSound: 
+  banknotesParentTag: BanknotesParent
+  friction: 4
+  minVelocity: 20
+  maxVelocity: 3000
 --- !u!114 &-7098004627208458900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -76,6 +80,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba45aac505a6e3c4b913e46d62100fa4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Coin
+  active: 1
 --- !u!114 &65583841499735466
 MonoBehaviour:
   m_ObjectHideFlags: 0

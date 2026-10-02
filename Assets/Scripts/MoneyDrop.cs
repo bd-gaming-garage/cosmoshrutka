@@ -36,7 +36,7 @@ public class MoneyDrop : MonoBehaviour
     {
         if (triggered || hand == null || boxRect == null) return;
 
-        if (wasGrabbing && !hand.isGrabbing && IsOverBox())
+        if (IsOverBox())
         {
             Trigger();
         }

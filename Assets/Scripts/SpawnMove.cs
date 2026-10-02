@@ -3,25 +3,19 @@ using UnityEngine;
 
 public class SpawnMove : MonoBehaviour
 {
-    [Header("Отступ назад (в локальных осях объекта)")]
     [SerializeField] private float backOffset = 5f;
 
-    [Header("Скорость движения к цели")]
     [SerializeField] private float duration = 1f;
 
-    [Header("Кривая (плавность)")]
     [SerializeField] private AnimationCurve curve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
     private Vector3 targetPosition;
 
     private void Start()
     {
-        // целевая точка — та, куда поставил спавнер
         targetPosition = transform.position;
 
-        // телепорт "назад" относительно ПОВОРОТА объекта
         transform.position = targetPosition - transform.right * backOffset;
-        // ↑ если "назад" по другой оси — см. ниже
 
         StartCoroutine(MoveToTarget());
     }

@@ -7,7 +7,7 @@ public class CursorHand : MonoBehaviour
     public static CursorHand Instance;
 
     public bool isGrabbing = false;
-    [SerializeField] private GameObject grabbedObj;
+    [SerializeField] public GameObject grabbedObj;
     private Vector2 _handPos;
     private float _catchUp;
     [SerializeField] private float catchUpTime = 0.15f;
@@ -22,6 +22,11 @@ public class CursorHand : MonoBehaviour
     void LateUpdate()
     {
         Vector2 mousePos = Mouse.current.position.ReadValue();
+
+        if (isGrabbing && Mouse.current != null && Mouse.current.leftButton.wasReleasedThisFrame)
+        {
+            Ungrab();
+        }
 
         if (isGrabbing && grabbedObj == steeringWheel)
         {

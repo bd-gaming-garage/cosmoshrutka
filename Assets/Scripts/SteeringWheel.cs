@@ -52,6 +52,10 @@ public class SteeringWheel : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
         Vector2 mousePos = Mouse.current.position.ReadValue();
         Vector2 deltaPos = mousePos - _lastMousePos;
 
+        float deltaLenght = deltaPos.magnitude;
+        
+        deltaPos = deltaPos.normalized * math.min(deltaLenght, 120);
+
         Vector2 orbitStart = Quaternion.Euler(0, 0, _grabAngle) * new Vector2(_radius, 0);
         Vector2 handPos = orbitStart + deltaPos;
 
@@ -92,7 +96,7 @@ public class SteeringWheel : MonoBehaviour, IPointerDownHandler, IPointerUpHandl
     }
 
     public void OnPointerUp(PointerEventData e) {
-        _angularVelocity = _lastDelta / Time.deltaTime / _radius * 3;
+        _angularVelocity = math.sign(_lastDelta) * math.min(math.abs(_lastDelta), 10) / Time.deltaTime / _radius * 3;
         Mouse.current.WarpCursorPosition((Vector2) _wheelrt.TransformPoint(_grabPoint) + _lastDeltaPos.normalized * math.min(_lastDelta, 10));
 
         _isGrabbed = false;
