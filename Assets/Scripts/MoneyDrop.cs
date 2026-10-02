@@ -4,23 +4,20 @@ using UnityEngine;
 [RequireComponent(typeof(RectTransform))]
 public class MoneyDrop : MonoBehaviour
 {
-    [Header("Коробка (перетащи сюда RectTransform коробки)")]
-    [SerializeField] private RectTransform boxRect;
+    [Header("Коробка (перетащи сюда RectTransform коробки)")] [SerializeField]
+    private RectTransform boxRect;
 
-    [Header("Зона срабатывания (отступ вокруг коробки)")]
-    [SerializeField] private float boxPadding = 30f;
+    [Header("Зона срабатывания (отступ вокруг коробки)")] [SerializeField]
+    private float boxPadding = 30f;
 
-    [Header("Анимация")]
-    [SerializeField] private float riseHeight = 90f;      // на сколько поднимется
-    [SerializeField] private float riseDuration = 0.25f;  // время подъёма
-    [SerializeField] private float floatDuration = 0.35f; // время левитации
-    [SerializeField] private float flyDuration = 0.45f;   // время полёта в коробку
-    [SerializeField] private float wobbleAmount = 6f;     // покачивание
+    [Header("Анимация")] [SerializeField] private float riseHeight = 90f; // на сколько поднимется
+    [SerializeField] private float riseDuration = 0.25f; // время подъёма
+    [SerializeField] private float flyDuration = 0.45f; // время полёта в коробку
     [SerializeField] private AnimationCurve flyCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
     [SerializeField] private Vector3 endScale = new Vector3(0.3f, 0.3f, 1f);
 
-    [Header("Звук (необязательно)")]
-    [SerializeField] private string collectSound = "";
+    [Header("Звук (необязательно)")] [SerializeField]
+    private string collectSound = "";
 
     private CursorHand hand;
     private bool wasGrabbing;
@@ -40,6 +37,7 @@ public class MoneyDrop : MonoBehaviour
         {
             Trigger();
         }
+
         wasGrabbing = hand.isGrabbing;
     }
 
@@ -59,8 +57,13 @@ public class MoneyDrop : MonoBehaviour
     {
         triggered = true;
 
-        var grabable = GetComponent<Grabable>();
+        var grabable = GetComponent<DraggableItem>();
         if (grabable != null) grabable.enabled = false;
+        
+        if (hand != null && hand.grabbedObject == gameObject)
+        {
+            hand.Ungrab();
+        }
 
         if (!string.IsNullOrEmpty(collectSound) && AudioManager.Instance != null)
             AudioManager.Instance.Play(collectSound);

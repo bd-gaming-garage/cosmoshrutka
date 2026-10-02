@@ -5,15 +5,16 @@ using UnityEngine;
 [RequireComponent(typeof(RectTransform))]
 public class PassengerHand : MonoBehaviour
 {
-    [Header("Движение руки 'назад' (в UI-координатах)")]
-    [SerializeField] private Vector2 backDirection = new Vector2(-1f, 0f);
+    [Header("Движение руки 'назад' (в UI-координатах)")] [SerializeField]
+    private Vector2 backDirection = new Vector2(-1f, 0f);
+
     [SerializeField] private float backDistance = 400f;
     [SerializeField] private float pullDuration = 0.2f;
     [SerializeField] private float backDuration = 0.6f;
     [SerializeField] private AnimationCurve backCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
-    [Header("Звук (необязательно)")]
-    [SerializeField] private string grabSound = "";
+    [Header("Звук (необязательно)")] [SerializeField]
+    private string grabSound = "";
 
     private RectTransform _rt;
     [SerializeField] private bool triggered;
@@ -38,7 +39,7 @@ public class PassengerHand : MonoBehaviour
 
     private Coin FindCoinOverlappingHand()
     {
-        var coins = FindObjectsByType<Coin>(FindObjectsSortMode.None);
+        var coins = FindObjectsByType<Coin>();
         if (coins.Length == 0) return null;
 
         Rect handRect = GetWorldRect(_rt);
@@ -57,6 +58,7 @@ public class PassengerHand : MonoBehaviour
             if (handRect.Overlaps(coinRect))
                 return coin;
         }
+
         return null;
     }
 
@@ -82,8 +84,14 @@ public class PassengerHand : MonoBehaviour
         var coinRb = coin.GetComponent<Rigidbody2D>();
         if (coinRb != null) coinRb.simulated = false;
 
-        var grab = coin.GetComponent<Grabable>();
+        var grab = coin.GetComponent<DraggableItem>();
         if (grab != null) grab.enabled = false;
+        
+        var hand = CursorHand.Instance;
+        if (hand != null && hand.grabbedObject == coin.gameObject)
+        {
+            hand.Ungrab();
+        }
 
         if (!string.IsNullOrEmpty(grabSound) && AudioManager.Instance != null)
             AudioManager.Instance.Play(grabSound);
