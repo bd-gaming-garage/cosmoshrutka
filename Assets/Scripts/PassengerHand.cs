@@ -17,21 +17,37 @@ public class PassengerHand : MonoBehaviour
     private string grabSound = "";
 
     private RectTransform _rt;
+    private SpawnMove spawnMove;
     [SerializeField] private bool triggered;
 
     private void Awake()
     {
         _rt = GetComponent<RectTransform>();
+        spawnMove = GetComponent<SpawnMove>();
     }
 
     private void LateUpdate()
     {
-        if (triggered) return;
+        if (triggered)
+        {
+            return;
+        }
 
-        if (GetComponentInChildren<Banknote>(true) != null) return;
+        if (spawnMove != null && !spawnMove.IsComplete)
+        {
+            return;
+        }
+
+        if (GetComponentInChildren<Banknote>(true) != null)
+        {
+            return;
+        }
 
         var coin = FindCoinOverlappingHand();
-        if (coin == null) return;
+        if (coin == null)
+        {
+            return;
+        }
 
         triggered = true;
         StartCoroutine(TakeCoin(coin));
@@ -86,7 +102,7 @@ public class PassengerHand : MonoBehaviour
 
         var grab = coin.GetComponent<DraggableItem>();
         if (grab != null) grab.enabled = false;
-        
+
         var hand = CursorHand.Instance;
         if (hand != null && hand.grabbedObject == coin.gameObject)
         {

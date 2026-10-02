@@ -11,9 +11,17 @@ public class SpawnMove : MonoBehaviour
 
     private Vector3 targetPosition;
 
+    public bool IsComplete { get; private set; }
+
     private void Start()
     {
         targetPosition = transform.position;
+
+        if (duration <= 0f)
+        {
+            IsComplete = true;
+            return;
+        }
 
         transform.position = targetPosition - transform.right * backOffset;
 
@@ -34,5 +42,6 @@ public class SpawnMove : MonoBehaviour
         }
 
         transform.position = targetPosition;
+        IsComplete = true;
     }
 }
