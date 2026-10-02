@@ -18,6 +18,9 @@
 # Visual Studio
 .vs/
 
+# Visual Studio
+.vscode/
+
 # Unity-generated IDE files
 *.csproj
 *.sln
