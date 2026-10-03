@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Grabable : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+public class DraggableItem : MonoBehaviour, IGrabbable, IPointerDownHandler, IPointerUpHandler
 {
     private bool _isGrabbed = false;
     Vector2 localPoint;
@@ -12,16 +12,17 @@ public class Grabable : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     [SerializeField] private string pickSound = null;
     [SerializeField] private string dropSound = null;
 
-    [Header("Куда пересаживать банкноту при взятии")]
-    [SerializeField] private string banknotesParentTag = "BanknotesParent";
+    [Header("Куда пересаживать банкноту при взятии")] [SerializeField]
+    private string banknotesParentTag = "BanknotesParent";
 
-    [Header("Инерция")]
-    [Tooltip("Сила трения. Больше — быстрее тормозит")]
-    [SerializeField] private float friction = 4f;
-    [Tooltip("Ниже этой скорости объект останавливается (пикселей/сек)")]
-    [SerializeField] private float minVelocity = 20f;
-    [Tooltip("Максимальная скорость броска (защита от телепортов)")]
-    [SerializeField] private float maxVelocity = 3000f;
+    [Header("Инерция")] [Tooltip("Сила трения. Больше — быстрее тормозит")] [SerializeField]
+    private float friction = 4f;
+
+    [Tooltip("Ниже этой скорости объект останавливается (пикселей/сек)")] [SerializeField]
+    private float minVelocity = 20f;
+
+    [Tooltip("Максимальная скорость броска (защита от телепортов)")] [SerializeField]
+    private float maxVelocity = 3000f;
 
     private Vector3 _lastWorldPos;
     private Vector3 _velocity;
@@ -69,8 +70,18 @@ public class Grabable : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public void OnPointerDown(PointerEventData e)
     {
+        if (e.button != PointerEventData.InputButton.Left)
+            return;
+
+        if (!hand.TryGrab(gameObject))
+        {
+            return;
+        }
+
         if (GetComponent<Banknote>() != null)
+        {
             ReparentToBanknotesParent();
+        }
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             _rt, e.position, e.pressEventCamera, out Vector2 local);
@@ -79,13 +90,16 @@ public class Grabable : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
         _velocity = Vector3.zero;
 
-        hand.Grab(gameObject);
         Grab();
     }
 
     public void OnPointerUp(PointerEventData e)
     {
-        hand.Ungrab();
+        if (e.button != PointerEventData.InputButton.Left)
+            return;
+
+        if (hand.grabbedObject == gameObject)
+            hand.Ungrab();
     }
 
     public void Grab()
@@ -96,12 +110,12 @@ public class Grabable : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
             AudioManager.Instance.Play(pickSound);
     }
 
-    public void Ungrab()
+    public void ReleaseGrab()
     {
         if (!_isGrabbed) return;
         _isGrabbed = false;
 
-        if (dropSound != null)
+        if (!string.IsNullOrEmpty(dropSound))
             AudioManager.Instance.Play(dropSound);
     }
 

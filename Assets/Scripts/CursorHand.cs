@@ -7,7 +7,7 @@ public class CursorHand : MonoBehaviour
     public static CursorHand Instance;
 
     public bool isGrabbing = false;
-    [SerializeField] public GameObject grabbedObj;
+    [SerializeField] public GameObject grabbedObject;
     private Vector2 _handPos;
     private float _catchUp;
     [SerializeField] private float catchUpTime = 0.15f;
@@ -21,14 +21,21 @@ public class CursorHand : MonoBehaviour
 
     void LateUpdate()
     {
-        Vector2 mousePos = Mouse.current.position.ReadValue();
+        var mouse = Mouse.current;
+        if (mouse == null)
+        {
+            Ungrab();
+            return;
+        }
 
-        if (isGrabbing && Mouse.current != null && Mouse.current.leftButton.wasReleasedThisFrame)
+        if (isGrabbing && mouse.leftButton.wasReleasedThisFrame)
         {
             Ungrab();
         }
 
-        if (isGrabbing && grabbedObj == steeringWheel)
+        Vector2 mousePos = mouse.position.ReadValue();
+
+        if (isGrabbing && grabbedObject == steeringWheel)
         {
             _handPos = transform.position;
             _catchUp = 1f;
@@ -47,19 +54,37 @@ public class CursorHand : MonoBehaviour
         }
     }
 
-    public void Grab(GameObject obj) {
-        if (isGrabbing) return;
+    public bool TryGrab(GameObject targetObject)
+    {
+        if (isGrabbing || targetObject == null)
+        {
+            return false;
+        }
 
-        grabbedObj = obj;
+        grabbedObject = targetObject;
         isGrabbing = true;
+        return true;
     }
 
-    public void Ungrab() {
-        if (!isGrabbing) return;
+    public void Ungrab()
+    {
+        if (!isGrabbing)
+        {
+            return;
+        }
 
+        GameObject releasedObject = grabbedObject;
         isGrabbing = false;
+        grabbedObject = null;
 
-        if (grabbedObj != null && grabbedObj != steeringWheel)
-            grabbedObj.GetComponent<Grabable>().Ungrab();
+        if (releasedObject == null)
+        {
+            return;
+        }
+
+        if (releasedObject.TryGetComponent<IGrabbable>(out var item))
+        {
+            item.ReleaseGrab();
+        }
     }
 }
