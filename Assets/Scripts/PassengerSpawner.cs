@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class PassengerSpawner : MonoBehaviour
 {
+    public static PassengerSpawner Instance;
+
     [Header("Spawn points")] [SerializeField]
     private Transform[] spawnPoints;
 
@@ -17,21 +19,48 @@ public class PassengerSpawner : MonoBehaviour
     private readonly Dictionary<Transform, GameObject> passengersByPoint = new();
 
     [Header("Passangers")]
-    [SerializeField] private uint passangersN = 0;
+    [SerializeField] private uint passangersNotServed = 0;
+    [SerializeField] private uint passangersServed = 0;
 
-    public void IncreacePassangers(uint n) {
-        passangersN += n;
+    private void Awake()
+    {
+        Instance = this;
     }
 
-    private bool DecreasePassanger() {
-        if (passangersN == 0) return false;
+    public void IncreacePassangers(uint n) 
+    {
+        passangersNotServed += n;
+    }
 
-        passangersN--;
-        return true;
+    public void ServePassanger()
+    {
+        passangersServed++;
+    }
+
+    private void Update()
+    {
+        SpawnAll();
+    }
+
+    public void SpawnAll()
+    {
+        if (spawnPoints == null)
+        {
+            return;
+        }
+
+        foreach (var point in spawnPoints)
+        {
+            SpawnAt(point);
+        }
     }
 
     public GameObject SpawnAt(Transform point)
     {
+        if (passangersNotServed == 0) {
+            return null;
+        } 
+
         if (point == null || prefab == null)
         {
             return null;
@@ -46,6 +75,7 @@ public class PassengerSpawner : MonoBehaviour
 
         var obj = Instantiate(prefab, point.position, point.rotation, actualParent);
 
+        passangersNotServed -= 1;
         passengersByPoint[point] = obj;
         return obj;
     }

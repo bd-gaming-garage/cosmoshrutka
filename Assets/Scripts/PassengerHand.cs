@@ -140,6 +140,8 @@ public class PassengerHand : MonoBehaviour
             yield return null;
         }
 
+        PassengerSpawner.Instance.ServePassanger();
+
         Destroy(coin.gameObject);
         Destroy(gameObject);
     }
