@@ -1,6 +1,9 @@
 using UnityEngine;
 
-public class Banknote : MonoBehaviour
+namespace Money.Scripts
 {
+    public class Banknote : MonoBehaviour
+    {
 
+    }
 }

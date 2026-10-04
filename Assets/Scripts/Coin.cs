@@ -1,6 +1,9 @@
 using UnityEngine;
 
-public class Coin : MonoBehaviour
+namespace Money.Scripts
 {
-    public bool active = true;
+    public class Coin : MonoBehaviour
+    {
+        public bool active = true;
+    }
 }

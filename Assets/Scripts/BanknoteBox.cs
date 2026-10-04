@@ -1,10 +1,13 @@
 using UnityEngine;
 
-public class BanknoteBox : MonoBehaviour
+namespace Money.Scripts
 {
-    public static GameObject Instance;
-    void Awake()
+    public class BanknoteBox : MonoBehaviour
     {
-        Instance = gameObject;
+        public static GameObject Instance;
+        void Awake()
+        {
+            Instance = gameObject;
+        }
     }
 }

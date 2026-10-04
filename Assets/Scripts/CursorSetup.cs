@@ -1,9 +1,12 @@
 using UnityEngine;
 
-public static class CursorSetup {
-    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+namespace Player.Scripts
+{
+    public static class CursorSetup {
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
 	
-    static void Init() {
-        Cursor.visible = false;
+        static void Init() {
+            Cursor.visible = false;
+        }
     }
 }
