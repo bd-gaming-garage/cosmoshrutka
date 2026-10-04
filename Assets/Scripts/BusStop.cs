@@ -5,7 +5,7 @@ public class BusStop : MonoBehaviour
     [SerializeField] private string _busTag = "Bus";
     [SerializeField] private uint _passengers = 10;
     [SerializeField] private uint _passengersMax = 10;
-    [SerializeField] private uint _passengersPerTick;
+    [SerializeField] private uint _passengersPerTick = 1;
     [SerializeField] private float _tickTime = 4f;
 
     private float _timer;
