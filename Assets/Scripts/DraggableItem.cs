@@ -1,10 +1,9 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class DraggableItem : MonoBehaviour, IGrabbable, IPointerDownHandler, IPointerUpHandler
+public class DraggableItem : GrabbableBehaviour
 {
-    private bool _isGrabbed = false;
-    Vector2 localPoint;
+    private Vector2 _localPoint;
     [SerializeField] private CursorHand hand;
     [SerializeField] private int value;
     private RectTransform _rt;
@@ -27,6 +26,9 @@ public class DraggableItem : MonoBehaviour, IGrabbable, IPointerDownHandler, IPo
     private Vector3 _lastWorldPos;
     private Vector3 _velocity;
 
+    protected override CursorHand ResolveHand() =>
+        hand != null ? hand : base.ResolveHand();
+
     void Awake()
     {
         _rt = GetComponent<RectTransform>();
@@ -34,15 +36,14 @@ public class DraggableItem : MonoBehaviour, IGrabbable, IPointerDownHandler, IPo
 
     void Start()
     {
-        hand = CursorHand.Instance;
         _lastWorldPos = transform.position;
     }
 
     private void LateUpdate()
     {
-        if (_isGrabbed)
+        if (IsGrabbed)
         {
-            transform.position = hand.transform.position - (Vector3)localPoint;
+            transform.position = GrabHand.transform.position - (Vector3)_localPoint;
 
             float dt = Mathf.Max(Time.deltaTime, 0.0001f);
             _velocity = (transform.position - _lastWorldPos) / dt;
@@ -68,16 +69,8 @@ public class DraggableItem : MonoBehaviour, IGrabbable, IPointerDownHandler, IPo
         _lastWorldPos = transform.position;
     }
 
-    public void OnPointerDown(PointerEventData e)
+    protected override void OnGrabStarted(PointerEventData e)
     {
-        if (e.button != PointerEventData.InputButton.Left)
-            return;
-
-        if (!hand.TryGrab(gameObject))
-        {
-            return;
-        }
-
         if (GetComponent<Banknote>() != null)
         {
             ReparentToBanknotesParent();
@@ -86,37 +79,29 @@ public class DraggableItem : MonoBehaviour, IGrabbable, IPointerDownHandler, IPo
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             _rt, e.position, e.pressEventCamera, out Vector2 local);
 
-        localPoint = transform.TransformVector(local);
+        _localPoint = transform.TransformVector(local);
 
         _velocity = Vector3.zero;
 
-        Grab();
-    }
+        _lastWorldPos = transform.position;
 
-    public void OnPointerUp(PointerEventData e)
-    {
-        if (e.button != PointerEventData.InputButton.Left)
-            return;
-
-        if (hand.GrabbedObject == gameObject)
-            hand.Ungrab();
-    }
-
-    public void Grab()
-    {
-        _isGrabbed = true;
-
-        if (pickSound != null)
+        if (!string.IsNullOrEmpty(pickSound) && AudioManager.Instance != null)
             AudioManager.Instance.Play(pickSound);
     }
 
-    public void ReleaseGrab()
+    protected override void OnGrabEnded(GrabEndReason reason)
     {
-        if (!_isGrabbed) return;
-        _isGrabbed = false;
-
-        if (!string.IsNullOrEmpty(dropSound))
+        if (reason == GrabEndReason.Released &&
+            !string.IsNullOrEmpty(dropSound) && AudioManager.Instance != null)
+        {
             AudioManager.Instance.Play(dropSound);
+        }
+    }
+
+    protected override void OnGrabCancelled()
+    {
+        _velocity = Vector3.zero;
+        _lastWorldPos = transform.position;
     }
 
     private void ReparentToBanknotesParent()

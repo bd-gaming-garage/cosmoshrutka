@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 
-public class SteeringWheel : MonoBehaviour, IGrabbable, IPointerDownHandler, IPointerUpHandler
+public class SteeringWheel : GrabbableBehaviour
 {
     [FormerlySerializedAs("_wheelrt")] [SerializeField]
     private RectTransform wheelrt;
@@ -16,7 +16,6 @@ public class SteeringWheel : MonoBehaviour, IGrabbable, IPointerDownHandler, IPo
     [SerializeField] private float _maxAngle = 360f;
     [SerializeField] private float _currentAngle = 0f;
 
-    private bool _isGrabbed = false;
     private Vector2 _grabPoint;
     [SerializeField] private float _grabAngle;
     [SerializeField] private float _startGrabAngle;
@@ -32,14 +31,21 @@ public class SteeringWheel : MonoBehaviour, IGrabbable, IPointerDownHandler, IPo
 
     private float _angularVelocity = 0f;
 
+    protected override CursorHand ResolveHand() =>
+        cursor != null
+            ? cursor.GetComponent<CursorHand>()
+            : base.ResolveHand();
+
     void Awake()
     {
         _rt = GetComponent<RectTransform>();
     }
 
-    void Update()
+    protected override void Update()
     {
-        if (!_isGrabbed)
+        base.Update();
+
+        if (!IsGrabbed)
         {
             float force = -spring * (_currentAngle / _maxAngle) * Mathf.Deg2Rad;
             _angularVelocity += force * Time.deltaTime;
@@ -53,13 +59,6 @@ public class SteeringWheel : MonoBehaviour, IGrabbable, IPointerDownHandler, IPo
         }
 
         var mouse = Mouse.current;
-        if (mouse == null)
-        {
-            cursor.GetComponent<CursorHand>().Ungrab();
-            return;
-        }
-
-
         Vector2 mousePos = mouse.position.ReadValue();
         Vector2 deltaPos = mousePos - _lastMousePos;
 
@@ -90,24 +89,14 @@ public class SteeringWheel : MonoBehaviour, IGrabbable, IPointerDownHandler, IPo
 
         wheelrt.localRotation = Quaternion.Euler(0, 0, _currentAngle);
 
-        cursor.transform.position = wheelrt.TransformPoint(_grabPoint);
+        GrabHand.transform.position = wheelrt.TransformPoint(_grabPoint);
 
         _lastMousePos = mousePos;
         _lastDeltaPos = deltaPos;
     }
 
-    public void OnPointerDown(PointerEventData e)
+    protected override void OnGrabStarted(PointerEventData e)
     {
-        if (e.button != PointerEventData.InputButton.Left)
-        {
-            return;
-        }
-
-        if (!cursor.GetComponent<CursorHand>().TryGrab(gameObject))
-        {
-            return;
-        }
-
         _angularVelocity = 0f;
         _lastDeltaPos = Vector2.zero;
 
@@ -118,30 +107,15 @@ public class SteeringWheel : MonoBehaviour, IGrabbable, IPointerDownHandler, IPo
 
         _grabAngle = Mathf.Atan2(local.y, local.x) * Mathf.Rad2Deg;
         _startGrabAngle = Mathf.Repeat(_grabAngle - _currentAngle, 360f);
-        _isGrabbed = true;
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             wheelrt, e.position, e.pressEventCamera, out Vector2 wheelLocal);
         _grabPoint = wheelLocal;
     }
 
-    public void OnPointerUp(PointerEventData e)
+    protected override void OnGrabEnded(GrabEndReason reason)
     {
-        if (e.button != PointerEventData.InputButton.Left)
-            return;
-
-        var hand = cursor.GetComponent<CursorHand>();
-
-        if (hand.GrabbedObject == gameObject)
-            hand.Ungrab();
-    }
-
-    public void ReleaseGrab()
-    {
-        if (!_isGrabbed) return;
-        _isGrabbed = false;
-
-        if (Mouse.current != null)
+        if (reason == GrabEndReason.Released && Mouse.current != null)
         {
             Mouse.current.WarpCursorPosition(
                 (Vector2)wheelrt.TransformPoint(_grabPoint) +
@@ -149,6 +123,13 @@ public class SteeringWheel : MonoBehaviour, IGrabbable, IPointerDownHandler, IPo
         }
     }
 
+    protected override void OnGrabCancelled()
+    {
+        _angularVelocity = 0f;
+        _lastDeltaPos = Vector2.zero;
+    }
+
     public float SteeringInput => _maxAngle > 0f
-        ? Mathf.Clamp(-_currentAngle / _maxAngle, -1f, 1f)     : 0f;
+        ? Mathf.Clamp(-_currentAngle / _maxAngle, -1f, 1f)
+        : 0f;
 }

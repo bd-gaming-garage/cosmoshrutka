@@ -30,7 +30,7 @@ public class CursorHand : MonoBehaviour
 
         if (IsGrabbing && mouse.leftButton.wasReleasedThisFrame)
         {
-            Ungrab();
+            Ungrab(GrabEndReason.Released);
         }
 
         Vector2 mousePos = mouse.position.ReadValue();
@@ -65,7 +65,7 @@ public class CursorHand : MonoBehaviour
         return true;
     }
 
-    public void Ungrab()
+    public void Ungrab(GrabEndReason reason = GrabEndReason.Cancelled)
     {
         GameObject releasedObject = GrabbedObject;
         GrabbedObject = null;
@@ -77,7 +77,16 @@ public class CursorHand : MonoBehaviour
 
         if (releasedObject.TryGetComponent<IGrabbable>(out var item))
         {
-            item.ReleaseGrab();
+            item.ReleaseGrab(reason);
         }
+    }
+    private void OnDisable()
+    {
+        Ungrab();
+    }
+
+    private void OnApplicationFocus(bool hasFocus)
+    {
+        if (!hasFocus) Ungrab();
     }
 }

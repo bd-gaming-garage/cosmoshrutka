@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(RectTransform))]
-public class GearLever : MonoBehaviour, IGrabbable, IPointerDownHandler, IPointerUpHandler
+public class GearLever : GrabbableBehaviour
 {
     [SerializeField] private PlayerMarshrutkaControls controls;
     [SerializeField] private CursorHand cursor;
@@ -18,12 +18,16 @@ public class GearLever : MonoBehaviour, IGrabbable, IPointerDownHandler, IPointe
     private RectTransform _parentRt;
     private Camera _eventCamera;
     private Vector2 _grabOffset;
-    private bool _isGrabbed;
 
     // 0 = Drive, 1 = Reverse.
     private float _position;
 
     private bool HasControls => controls != null && controls.HasMarshrutka;
+
+    protected override bool CanContinueGrab => HasControls;
+
+    protected override CursorHand ResolveHand() =>
+        cursor != null ? cursor : base.ResolveHand();
 
     private float GearPosition =>
         (controls != null && controls.CurrentGear == MarshrutkaGear.Reverse) ? 1f : 0f;
@@ -39,28 +43,15 @@ public class GearLever : MonoBehaviour, IGrabbable, IPointerDownHandler, IPointe
         SnapToCurrentGear();
     }
 
-    private void Update()
+    protected override void Update()
     {
-        if (_isGrabbed)
+        base.Update();
+
+        if (IsGrabbed)
         {
-            var mouse = Mouse.current;
-
-            if (!HasControls || cursor == null ||
-                cursor.GrabbedObject != gameObject || mouse == null)
-            {
-                CancelGrab();
-            }
-            else if (!mouse.leftButton.isPressed)
-            {
-                EndGrab();
-            }
-            else
-            {
-                UpdateDrag(mouse.position.ReadValue());
-            }
+            UpdateDrag(Mouse.current.position.ReadValue());
         }
-
-        if (!_isGrabbed)
+        else
         {
             _position = Mathf.MoveTowards(
                 _position, GearPosition,
@@ -69,28 +60,28 @@ public class GearLever : MonoBehaviour, IGrabbable, IPointerDownHandler, IPointe
         }
     }
 
-    public void OnPointerDown(PointerEventData eventData)
+    protected override bool TryPrepareGrab(PointerEventData eventData)
     {
-        if (!isActiveAndEnabled || !HasControls || _parentRt == null ||
-            eventData.button != PointerEventData.InputButton.Left ||
+        if (_parentRt == null ||
             (reversePosition - drivePosition).sqrMagnitude < 0.001f)
         {
-            return;
+            return false;
         }
 
         if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 _parentRt, eventData.position, eventData.pressEventCamera,
                 out Vector2 pointer))
         {
-            return;
+            return false;
         }
-
-        if (cursor == null) cursor = CursorHand.Instance;
-        if (cursor == null || !cursor.TryGrab(gameObject)) return;
 
         _eventCamera = eventData.pressEventCamera;
         _grabOffset = _rt.anchoredPosition - pointer;
-        _isGrabbed = true;
+        return true;
+    }
+
+    protected override void OnGrabStarted(PointerEventData eventData)
+    {
         ClampToAllowedRange();
         ApplyPosition();
     }
@@ -123,69 +114,30 @@ public class GearLever : MonoBehaviour, IGrabbable, IPointerDownHandler, IPointe
         }
     }
 
-    public void OnPointerUp(PointerEventData eventData)
+    protected override void OnGrabEnded(GrabEndReason reason)
     {
-        if (eventData.button == PointerEventData.InputButton.Left)
-        {
-            EndGrab();
-        }
-    }
-
-    private void EndGrab()
-    {
-        if (!_isGrabbed)
-        {
-            return;
-        }
-        
-        if (cursor != null && cursor.GrabbedObject == gameObject)
-        {
-            cursor.Ungrab();
-        }
-        else
-        {
-            CancelGrab();
-        }
-    }
-
-    public void ReleaseGrab()
-    {
-        if (!_isGrabbed) return;
-        _isGrabbed = false;
+        if (reason != GrabEndReason.Released) return;
 
         var mouse = Mouse.current;
-        if (!isActiveAndEnabled || !Application.isFocused ||
-            !HasControls || mouse == null ||
-            !mouse.leftButton.wasReleasedThisFrame)
+        if (!HasControls || mouse == null)
         {
             SnapToCurrentGear();
             return;
         }
 
-        // Sample the final pointer position and recheck the movement lock.
         UpdateDrag(mouse.position.ReadValue());
 
-        // Releasing at the midpoint preserves the current gear.
         MarshrutkaGear requestedGear = controls.CurrentGear;
         if (_position < 0.5f)
             requestedGear = MarshrutkaGear.Drive;
         else if (_position > 0.5f)
             requestedGear = MarshrutkaGear.Reverse;
 
-        // The controller validates the request again.
-        // Update then animates towards the actual accepted gear.
         controls.TrySelectGear(requestedGear);
     }
 
-    private void CancelGrab()
+    protected override void OnGrabCancelled()
     {
-        _isGrabbed = false;
-
-        if (cursor != null && cursor.GrabbedObject == gameObject)
-        {
-            cursor.Ungrab();
-        }
-
         SnapToCurrentGear();
     }
 
@@ -199,15 +151,5 @@ public class GearLever : MonoBehaviour, IGrabbable, IPointerDownHandler, IPointe
     {
         _rt.anchoredPosition = Vector2.Lerp(
             drivePosition, reversePosition, _position);
-    }
-
-    private void OnDisable()
-    {
-        CancelGrab();
-    }
-
-    private void OnApplicationFocus(bool hasFocus)
-    {
-        if (!hasFocus) CancelGrab();
     }
 }
