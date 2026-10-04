@@ -16,23 +16,18 @@ public class PassengerSpawner : MonoBehaviour
 
     private readonly Dictionary<Transform, GameObject> passengersByPoint = new();
 
-    private void Start()
-    {
-        SpawnAll();
+    [Header("Passangers")]
+    [SerializeField] private uint passangersN = 0;
+
+    public void IncreacePassangers(uint n) {
+        passangersN += n;
     }
 
+    private bool DecreasePassanger() {
+        if (passangersN == 0) return false;
 
-    public void SpawnAll()
-    {
-        if (spawnPoints == null)
-        {
-            return;
-        }
-
-        foreach (var point in spawnPoints)
-        {
-            SpawnAt(point);
-        }
+        passangersN--;
+        return true;
     }
 
     public GameObject SpawnAt(Transform point)
