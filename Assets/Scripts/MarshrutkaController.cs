@@ -5,8 +5,8 @@ public class MarshrutkaController : MonoBehaviour
 {
     [Header("Engine")]
     [SerializeField, Min(0f)] private float acceleration = 5f;
-    [SerializeField, Min(0f)] private float maxForwardSpeed = 15f;
-    [SerializeField, Min(0f)] private float maxReverseSpeed = 5f;
+    [SerializeField, Min(0f)] private float maxForwardSpeed = 30f;
+    [SerializeField, Min(0f)] private float maxReverseSpeed = 15f;
         
     [Header("Steering")]
     [SerializeField, Range(0f, 60f)] private float maxSteerAngle = 30f;

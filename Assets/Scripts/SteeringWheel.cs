@@ -20,12 +20,12 @@ public class SteeringWheel : GrabbableBehaviour
     [SerializeField] private float _grabAngle;
     [SerializeField] private float _startGrabAngle;
 
-    [SerializeField] private float _radius = 3f;
+    [SerializeField] private float _radius = 300f;
 
     private Vector2 _lastMousePos;
 
-    [SerializeField] private float spring = 1f;
-    [SerializeField] private float damping = 1f;
+    [SerializeField] private float spring = 2000f;
+    [SerializeField] private float damping = 5f;
 
     [Tooltip("Vehicle speed in m/s at which self-centering reaches full strength")]
     [SerializeField, Min(0.1f)] private float fullReturnSpeed = 10f;
@@ -35,9 +35,7 @@ public class SteeringWheel : GrabbableBehaviour
     private float _angularVelocity = 0f;
 
     protected override CursorHand ResolveHand() =>
-        cursor != null
-            ? cursor.GetComponent<CursorHand>()
-            : base.ResolveHand();
+        cursor != null ? cursor.GetComponent<CursorHand>() : base.ResolveHand();
 
     void Awake()
     {
