@@ -2440,6 +2440,16 @@ MonoBehaviour:
     volume: 1
     pitch: 1
     loop: 0
+  - name: BusImpactLight
+    clip: {fileID: 8300000, guid: 7882d6291e2849c2b654041d0f16bdc7, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+  - name: BusImpactHeavy
+    clip: {fileID: 8300000, guid: 827f682e98c64fd0b7b931588ab7ba62, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
 --- !u!1 &1345563228
 GameObject:
   m_ObjectHideFlags: 0
