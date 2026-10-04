@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+// Follow the hand after CursorHand.LateUpdate, before ClickGrabSelector.
+[DefaultExecutionOrder(50)]
 public class DraggableItem : GrabbableBehaviour
 {
     private Vector2 _localPoint;
@@ -32,6 +34,7 @@ public class DraggableItem : GrabbableBehaviour
 
     private Vector3 _lastWorldPos;
     private Vector3 _velocity;
+    private bool _isReleased;
 
     protected override CursorHand ResolveHand() =>
         hand != null ? hand : base.ResolveHand();
@@ -59,6 +62,13 @@ public class DraggableItem : GrabbableBehaviour
             if (_velocity.magnitude > maxVelocity)
                 _velocity = _velocity.normalized * maxVelocity;
 
+            _lastWorldPos = transform.position;
+            return;
+        }
+
+        // Items still held by passengers must follow their parent animation.
+        if (!_isReleased)
+        {
             _lastWorldPos = transform.position;
             return;
         }
@@ -147,6 +157,7 @@ public class DraggableItem : GrabbableBehaviour
 
     protected override void OnGrabStarted(PointerEventData e)
     {
+        _isReleased = false;
         if (GetComponent<Banknote>() != null)
         {
             ReparentToBanknotesParent();
@@ -167,6 +178,7 @@ public class DraggableItem : GrabbableBehaviour
 
     protected override void OnGrabEnded(GrabEndReason reason)
     {
+        _isReleased = reason == GrabEndReason.Released;
         if (reason == GrabEndReason.Released &&
             !string.IsNullOrEmpty(dropSound) && AudioManager.Instance != null)
         {
@@ -176,6 +188,7 @@ public class DraggableItem : GrabbableBehaviour
 
     protected override void OnGrabCancelled()
     {
+        _isReleased = false;
         _velocity = Vector3.zero;
         _lastWorldPos = transform.position;
     }
