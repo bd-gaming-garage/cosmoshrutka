@@ -1753,7 +1753,6 @@ MonoBehaviour:
   cursor: {fileID: 874991034}
   _maxAngle: 360
   _currentAngle: 0
-  _steerInput: 0
   _grabAngle: 0
   _startGrabAngle: 0
   _radius: 300
