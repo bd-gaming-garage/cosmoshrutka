@@ -13,6 +13,7 @@ public class CursorHand : MonoBehaviour
     private float _catchUp;
     [SerializeField] private float catchUpTime = 0.15f;
 
+    [SerializeField] private Image handImage;
     [SerializeField] private GameObject steeringWheel;
     [SerializeField] private Sprite notGrabbingSprite;
     [SerializeField] private Sprite grabbingSprite;
@@ -24,7 +25,7 @@ public class CursorHand : MonoBehaviour
 
     void LateUpdate()
     {
-        setSprite(IsGrabbing);
+        SetSprite(IsGrabbing);
 
         var mouse = Mouse.current;
         if (mouse == null)
@@ -59,18 +60,14 @@ public class CursorHand : MonoBehaviour
         }
     }
 
-    private void setSprite(bool g) {
-        if (!g && notGrabbingSprite != null)
-        {
-            gameObject.GetComponent<Image>().sprite = notGrabbingSprite;
-            return;
-        }
+    private void SetSprite(bool isGrabbing)
+    {
+        if (handImage == null) return;
 
-
-        if (g && grabbingSprite != null)
+        Sprite sprite = isGrabbing ? grabbingSprite : notGrabbingSprite;
+        if (sprite != null && handImage.sprite != sprite)
         {
-            gameObject.GetComponent<Image>().sprite = grabbingSprite;
-            return;
+            handImage.sprite = sprite;
         }
     }
 
@@ -100,6 +97,7 @@ public class CursorHand : MonoBehaviour
             item.ReleaseGrab(reason);
         }
     }
+
     private void OnDisable()
     {
         Ungrab();

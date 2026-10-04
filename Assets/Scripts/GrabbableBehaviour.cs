@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(RectTransform))]
 public abstract class GrabbableBehaviour : MonoBehaviour,
-    IGrabbable, IPointerDownHandler, IPointerUpHandler
+    IGrabbable, IGrabTarget, IPointerUpHandler
 {
     protected bool IsGrabbed { get; private set; }
     protected CursorHand GrabHand { get; private set; }

@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 
 public class ClickGrabSelector : MonoBehaviour
 {
-    [SerializeField] private float radius = 100f;
+    [SerializeField] private float radius = 40f;
     private readonly List<RaycastResult> hits = new();
 
     private void Update()
@@ -43,7 +43,7 @@ public class ClickGrabSelector : MonoBehaviour
 
         foreach (var behaviour in FindObjectsByType<MonoBehaviour>())
         {
-            if (behaviour is not IGrabbable || behaviour is not IPointerDownHandler)
+            if (behaviour is not IGrabTarget)
             {
                 continue;
             }
