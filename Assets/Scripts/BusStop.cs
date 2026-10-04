@@ -2,15 +2,46 @@ using UnityEngine;
 
 public class BusStop : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] private string _busTag = "Bus";
+    [SerializeField] private uint _passengers = 10;
+    [SerializeField] private uint _passengersMax = 10;
+    [SerializeField] private uint _passengersPerTick;
+    [SerializeField] private float _tickTime = 4f;
+
+    private float _timer;
+
+    private void Update()
     {
-        
+        _timer += Time.deltaTime;
+
+        if (_timer >= _tickTime)
+        {
+            _timer -= _tickTime;
+            
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    private void IncrementPassangers(uint n)
     {
-        
+        if (_passengers + n > _passengersMax)
+        {
+            _passengers = _passengersMax;
+        }
+        else
+        {
+            _passengers += n;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!other.CompareTag(_busTag)) return;
+
+        Trigger();
+    }
+
+    private void Trigger()
+    {
+        IncrementPassangers(1);
     }
 }

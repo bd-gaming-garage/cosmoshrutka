@@ -19,22 +19,36 @@ public class PassengerSpawner : MonoBehaviour
     private readonly Dictionary<Transform, GameObject> passengersByPoint = new();
 
     [Header("Passangers")]
-    [SerializeField] private uint passangersNotServed = 0;
-    [SerializeField] private uint passangersServed = 0;
+    [SerializeField] private uint passengersMax = 30;
+    [SerializeField] private uint passengersNotServed = 0;
+    [SerializeField] private uint passengersServed = 0;
+    [SerializeField] private uint passengersServing = 0;
+
 
     private void Awake()
     {
         Instance = this;
     }
 
-    public void IncreacePassangers(uint n) 
+    private uint AllPassengers() {
+        return passengersNotServed + passengersServed + passengersServing;
+    }
+
+    public uint IncreacePassangers(uint n)
     {
-        passangersNotServed += n;
+        if (AllPassengers() + n <= passengersMax) {
+            passengersNotServed += n;
+            return 0;
+        }
+
+        uint passengersStay = AllPassengers() + n - passengersMax;
+        passengersNotServed = passengersMax - passengersNotServed - passengersServing;
+        return passengersStay;
     }
 
     public void ServePassanger()
     {
-        passangersServed++;
+        passengersServed++;
     }
 
     private void Update()
@@ -57,7 +71,7 @@ public class PassengerSpawner : MonoBehaviour
 
     public GameObject SpawnAt(Transform point)
     {
-        if (passangersNotServed == 0) {
+        if (passengersNotServed == 0) {
             return null;
         } 
 
@@ -75,7 +89,7 @@ public class PassengerSpawner : MonoBehaviour
 
         var obj = Instantiate(prefab, point.position, point.rotation, actualParent);
 
-        passangersNotServed -= 1;
+        passengersNotServed -= 1;
         passengersByPoint[point] = obj;
         return obj;
     }
