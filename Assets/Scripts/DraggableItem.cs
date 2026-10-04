@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -32,9 +33,24 @@ public class DraggableItem : GrabbableBehaviour
     private Canvas _rootCanvas;
     private readonly Vector3[] _worldCorners = new Vector3[4];
 
-    private Vector3 _lastWorldPos;
+    private const float ThrowSampleWindow = 0.08f;
+    private readonly Queue<MotionSample> _motionSamples = new Queue<MotionSample>(16);
+    private CursorHand _trackedHand;
     private Vector3 _velocity;
     private bool _isReleased;
+    private bool _releasePending;
+
+    private readonly struct MotionSample
+    {
+        public readonly Vector3 Position;
+        public readonly float Time;
+
+        public MotionSample(Vector3 position, float time)
+        {
+            Position = position;
+            Time = time;
+        }
+    }
 
     protected override CursorHand ResolveHand() =>
         hand != null ? hand : base.ResolveHand();
@@ -45,38 +61,31 @@ public class DraggableItem : GrabbableBehaviour
         CacheCanvas();
     }
 
-    void Start()
-    {
-        _lastWorldPos = transform.position;
-    }
-
     private void LateUpdate()
     {
         if (IsGrabbed)
         {
-            transform.position = GrabHand.transform.position - (Vector3)_localPoint;
+            FollowHandAndSampleVelocity();
+            return;
+        }
 
-            float dt = Mathf.Max(Time.deltaTime, 0.0001f);
-            _velocity = (transform.position - _lastWorldPos) / dt;
-
-            if (_velocity.magnitude > maxVelocity)
-                _velocity = _velocity.normalized * maxVelocity;
-
-            _lastWorldPos = transform.position;
+        if (_releasePending)
+        {
+            // Release callbacks run before the hand's final LateUpdate movement.
+            FollowHandAndSampleVelocity();
+            _releasePending = false;
+            _trackedHand = null;
+            _motionSamples.Clear();
+            BounceInsideCanvas();
             return;
         }
 
         // Items still held by passengers must follow their parent animation.
-        if (!_isReleased)
-        {
-            _lastWorldPos = transform.position;
-            return;
-        }
+        if (!_isReleased) return;
 
         if (_velocity.sqrMagnitude > minVelocity * minVelocity)
         {
             transform.position += _velocity * Time.deltaTime;
-
             _velocity *= Mathf.Exp(-friction * Time.deltaTime);
         }
         else
@@ -85,7 +94,36 @@ public class DraggableItem : GrabbableBehaviour
         }
 
         BounceInsideCanvas();
-        _lastWorldPos = transform.position;
+    }
+
+    private void FollowHandAndSampleVelocity()
+    {
+        if (_trackedHand == null)
+        {
+            _velocity = Vector3.zero;
+            return;
+        }
+
+        Vector3 handPosition = _trackedHand.transform.position;
+        transform.position = handPosition - (Vector3)_localPoint;
+
+        float now = Time.time;
+        _motionSamples.Enqueue(new MotionSample(handPosition, now));
+
+        // Retain at least two samples, even when a frame exceeds the window.
+        while (_motionSamples.Count > 2 &&
+               (now - _motionSamples.Peek().Time > ThrowSampleWindow ||
+                _motionSamples.Count > 64))
+        {
+            _motionSamples.Dequeue();
+        }
+
+        MotionSample first = _motionSamples.Peek();
+        float elapsed = now - first.Time;
+        _velocity = elapsed > 0.0001f
+            ? Vector3.ClampMagnitude(
+                (handPosition - first.Position) / elapsed, Mathf.Max(maxVelocity, 0f))
+            : Vector3.zero;
     }
 
     private void OnTransformParentChanged()
@@ -158,6 +196,9 @@ public class DraggableItem : GrabbableBehaviour
     protected override void OnGrabStarted(PointerEventData e)
     {
         _isReleased = false;
+        _releasePending = false;
+        _motionSamples.Clear();
+        _trackedHand = GrabHand;
         if (GetComponent<Banknote>() != null)
         {
             ReparentToBanknotesParent();
@@ -170,7 +211,7 @@ public class DraggableItem : GrabbableBehaviour
 
         _velocity = Vector3.zero;
 
-        _lastWorldPos = transform.position;
+        _motionSamples.Enqueue(new MotionSample(_trackedHand.transform.position, Time.time));
 
         if (!string.IsNullOrEmpty(pickSound) && AudioManager.Instance != null)
             AudioManager.Instance.Play(pickSound);
@@ -179,6 +220,7 @@ public class DraggableItem : GrabbableBehaviour
     protected override void OnGrabEnded(GrabEndReason reason)
     {
         _isReleased = reason == GrabEndReason.Released;
+        _releasePending = _isReleased;
         if (reason == GrabEndReason.Released &&
             !string.IsNullOrEmpty(dropSound) && AudioManager.Instance != null)
         {
@@ -189,8 +231,10 @@ public class DraggableItem : GrabbableBehaviour
     protected override void OnGrabCancelled()
     {
         _isReleased = false;
+        _releasePending = false;
+        _trackedHand = null;
+        _motionSamples.Clear();
         _velocity = Vector3.zero;
-        _lastWorldPos = transform.position;
     }
 
     private void ReparentToBanknotesParent()
