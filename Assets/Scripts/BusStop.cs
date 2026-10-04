@@ -43,6 +43,7 @@ public class BusStop : MonoBehaviour
 
     private void Trigger()
     {
+        PassengerSpawner.Instance.passengersServed = 0;
         _passengers = PassengerSpawner.Instance.IncreacePassangers(_passengers);
     }
 }

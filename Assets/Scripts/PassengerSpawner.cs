@@ -25,7 +25,7 @@ public class PassengerSpawner : MonoBehaviour
     [Header("Passangers")]
     [SerializeField] private uint passengersMax = 30;
     [SerializeField] private uint passengersNotServed = 0;
-    [SerializeField] private uint passengersServed = 0;
+    [SerializeField] public uint passengersServed = 0;
     [SerializeField] private uint passengersServing = 0;
 
     [Header("Spawn interval")]
