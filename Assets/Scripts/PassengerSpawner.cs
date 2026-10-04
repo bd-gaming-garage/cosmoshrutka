@@ -5,15 +5,19 @@ public class PassengerSpawner : MonoBehaviour
 {
     public static PassengerSpawner Instance;
 
-    [Header("Spawn points")] [SerializeField]
+    [Header("Spawn points")]
+    [SerializeField]
     private Transform[] spawnPoints;
 
-    [Header("Passenger prefab")] [SerializeField]
+    [Header("Passenger prefab")]
+    [SerializeField]
     private GameObject prefab;
 
     [SerializeField] private Transform parent;
 
-    [Header("Editor visualization")] [Tooltip("Spawn point marker radius")] [SerializeField]
+    [Header("Editor visualization")]
+    [Tooltip("Spawn point marker radius")]
+    [SerializeField]
     private float checkRadius = 1f;
 
     private readonly Dictionary<Transform, GameObject> passengersByPoint = new();
@@ -24,19 +28,25 @@ public class PassengerSpawner : MonoBehaviour
     [SerializeField] private uint passengersServed = 0;
     [SerializeField] private uint passengersServing = 0;
 
+    [Header("Spawn interval")]
+    [SerializeField] private float spawnInterval = 1f;
+
+    private float _timer;
 
     private void Awake()
     {
         Instance = this;
     }
 
-    private uint AllPassengers() {
+    public uint AllPassengers()
+    {
         return passengersNotServed + passengersServed + passengersServing;
     }
 
     public uint IncreacePassangers(uint n)
     {
-        if (AllPassengers() + n <= passengersMax) {
+        if (AllPassengers() + n <= passengersMax)
+        {
             passengersNotServed += n;
             return 0;
         }
@@ -49,10 +59,16 @@ public class PassengerSpawner : MonoBehaviour
     public void ServePassanger()
     {
         passengersServed++;
+        passengersServing--;
     }
 
     private void Update()
     {
+        _timer += Time.deltaTime;
+
+        if (_timer < spawnInterval) return;
+
+        _timer -= spawnInterval;
         SpawnAll();
     }
 
@@ -71,9 +87,10 @@ public class PassengerSpawner : MonoBehaviour
 
     public GameObject SpawnAt(Transform point)
     {
-        if (passengersNotServed == 0) {
+        if (passengersNotServed == 0)
+        {
             return null;
-        } 
+        }
 
         if (point == null || prefab == null)
         {
@@ -90,6 +107,7 @@ public class PassengerSpawner : MonoBehaviour
         var obj = Instantiate(prefab, point.position, point.rotation, actualParent);
 
         passengersNotServed -= 1;
+        passengersServing += 1;
         passengersByPoint[point] = obj;
         return obj;
     }

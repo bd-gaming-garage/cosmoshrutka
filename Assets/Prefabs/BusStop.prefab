@@ -132,7 +132,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BusStop
   _busTag: Bus
-  _passengers: 10
+  _passengers: 5
   _passengersMax: 10
   _passengersPerTick: 0
   _tickTime: 4
