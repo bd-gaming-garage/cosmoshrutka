@@ -37841,7 +37841,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1571c1a85e8c4b518598f2daf2b8503a, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MarshrutkaCollisionAudio
   lightImpactSound: BusImpactLight
   heavyImpactSound: BusImpactHeavy
@@ -70671,12 +70671,12 @@ MonoBehaviour:
     loop: 0
   - name: BusImpactLight
     clip: {fileID: 8300000, guid: 7882d6291e2849c2b654041d0f16bdc7, type: 3}
-    volume: 1
+    volume: 0.731
     pitch: 1
     loop: 0
   - name: BusImpactHeavy
     clip: {fileID: 8300000, guid: 827f682e98c64fd0b7b931588ab7ba62, type: 3}
-    volume: 1
+    volume: 0.763
     pitch: 1
     loop: 0
 --- !u!1 &1284428149
