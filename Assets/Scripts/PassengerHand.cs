@@ -1,11 +1,11 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [RequireComponent(typeof(RectTransform))]
 public class PassengerHand : MonoBehaviour
 {
-    [Header("Движение руки 'назад' (в UI-координатах)")] [SerializeField]
+    [Header("Hand departure in UI coordinates")] [SerializeField]
     private Vector2 backDirection = new Vector2(-1f, 0f);
 
     [SerializeField] private float backDistance = 400f;
@@ -13,17 +13,21 @@ public class PassengerHand : MonoBehaviour
     [SerializeField] private float backDuration = 0.6f;
     [SerializeField] private AnimationCurve backCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
-    [Header("Звук (необязательно)")] [SerializeField]
-    private string grabSound = "";
+    [Header("Optional audio")] [SerializeField]
+    private string enterSound = "PassengerEnter";
+
+    [FormerlySerializedAs("grabSound")]
+    [SerializeField] private string acceptChangeSound = "PassengerGoodChange";
 
     private RectTransform _rt;
-    private SpawnMove spawnMove;
+    private PassengerEntranceAnimation _passengerEntranceAnimation;
+    private bool _entranceAnnounced;
     [SerializeField] private bool triggered;
 
     private void Awake()
     {
         _rt = GetComponent<RectTransform>();
-        spawnMove = GetComponent<SpawnMove>();
+        _passengerEntranceAnimation = GetComponent<PassengerEntranceAnimation>();
     }
 
     private void LateUpdate()
@@ -33,9 +37,16 @@ public class PassengerHand : MonoBehaviour
             return;
         }
 
-        if (spawnMove != null && !spawnMove.IsComplete)
+        if (_passengerEntranceAnimation != null && !_passengerEntranceAnimation.IsComplete)
         {
             return;
+        }
+
+        if (!_entranceAnnounced)
+        {
+            _entranceAnnounced = true;
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlayVoice(enterSound);
         }
 
         if (GetComponentInChildren<Banknote>(true) != null)
@@ -104,13 +115,13 @@ public class PassengerHand : MonoBehaviour
         if (grab != null) grab.enabled = false;
 
         var hand = CursorHand.Instance;
-        if (hand != null && hand.grabbedObject == coin.gameObject)
+        if (hand != null && hand.GrabbedObject == coin.gameObject)
         {
             hand.Ungrab();
         }
 
-        if (!string.IsNullOrEmpty(grabSound) && AudioManager.Instance != null)
-            AudioManager.Instance.Play(grabSound);
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlayVoice(acceptChangeSound);
 
         RectTransform coinRt = coin.GetComponent<RectTransform>();
 
@@ -140,6 +151,8 @@ public class PassengerHand : MonoBehaviour
             _rt.anchoredPosition = Vector2.Lerp(handStart, handEnd, k);
             yield return null;
         }
+
+        PassengerSpawner.Instance.ServePassanger();
 
         Destroy(coin.gameObject);
         Destroy(gameObject);

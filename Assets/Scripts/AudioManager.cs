@@ -17,8 +17,10 @@ public class AudioManager : MonoBehaviour
     }
 
     [SerializeField] private Sound[] sounds;
+    [SerializeField] private string startupMusic = "";
 
     private AudioSource musicSource;
+    private AudioSource voiceSource;
     private readonly List<AudioSource> sfxPool = new List<AudioSource>();
     private const int SFX_POOL_SIZE = 8;
 
@@ -40,7 +42,7 @@ public class AudioManager : MonoBehaviour
             if (string.IsNullOrEmpty(s.name)) continue;
             if (lookup.ContainsKey(s.name))
             {
-                Debug.LogWarning($"Дубликат имени звука: {s.name}");
+                Debug.LogWarning($"Duplicate sound name: {s.name}");
                 continue;
             }
             lookup.Add(s.name, s);
@@ -48,6 +50,10 @@ public class AudioManager : MonoBehaviour
 
         musicSource = gameObject.AddComponent<AudioSource>();
         musicSource.playOnAwake = false;
+
+        voiceSource = gameObject.AddComponent<AudioSource>();
+        voiceSource.playOnAwake = false;
+        voiceSource.spatialBlend = 0f;
 
         for (int i = 0; i < SFX_POOL_SIZE; i++)
         {
@@ -57,16 +63,42 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        if (Instance == this && !string.IsNullOrEmpty(startupMusic))
+            PlayMusic(startupMusic);
+    }
+
+    public void PlayVoice(string name)
+    {
+        if (string.IsNullOrEmpty(name) || voiceSource.isPlaying)
+            return;
+
+        if (!lookup.TryGetValue(name, out var sound))
+        {
+            Debug.LogWarning($"Sound '{name}' was not found");
+            return;
+        }
+
+        if (sound.clip == null) return;
+
+        voiceSource.clip = sound.clip;
+        voiceSource.volume = sound.volume;
+        voiceSource.pitch = sound.pitch;
+        voiceSource.loop = false;
+        voiceSource.Play();
+    }
+
     public void Play(string name, float volumeMultiplier = 1f)
     {
         if (!lookup.TryGetValue(name, out var sound))
         {
-            Debug.LogWarning($"Звук '{name}' не найден!");
+            Debug.LogWarning($"Sound '{name}' was not found");
             return;
         }
         if (sound.clip == null) return;
 
-        Debug.Log($"Играю '{name}', clip={sound.clip.name}");
+        Debug.Log($"Playing '{name}', clip={sound.clip.name}");
         var src = GetFreeSource();
         src.spatialBlend = 0f;
         src.clip = sound.clip;
@@ -87,13 +119,16 @@ public class AudioManager : MonoBehaviour
         }
         if (musicSource.isPlaying && musicSource.clip == sound.clip)
             musicSource.Stop();
+
+        if (voiceSource.isPlaying && voiceSource.clip == sound.clip)
+            voiceSource.Stop();
     }
 
     public void PlayMusic(string name, float volumeMultiplier = 1f)
     {
         if (!lookup.TryGetValue(name, out var sound))
         {
-            Debug.LogWarning($"Музыка '{name}' не найдена!");
+            Debug.LogWarning($"Music '{name}' was not found");
             return;
         }
         if (sound.clip == null) return;

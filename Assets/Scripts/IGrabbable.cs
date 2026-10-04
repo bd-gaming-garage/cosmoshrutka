@@ -1,4 +1,4 @@
 public interface IGrabbable
 {
-    void ReleaseGrab();
+    void ReleaseGrab(GrabEndReason reason);
 }

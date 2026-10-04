@@ -6,6 +6,7 @@ TagManager:
   tags:
   - CursorHand
   - BanknotesParent
+  - Bus
   layers:
   - Default
   - TransparentFX

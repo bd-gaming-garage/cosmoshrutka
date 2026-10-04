@@ -4,19 +4,19 @@ using UnityEngine;
 [RequireComponent(typeof(RectTransform))]
 public class MoneyDrop : MonoBehaviour
 {
-    [Header("Коробка (перетащи сюда RectTransform коробки)")] [SerializeField]
+    [Header("Cash box")] [SerializeField]
     private RectTransform boxRect;
 
-    [Header("Зона срабатывания (отступ вокруг коробки)")] [SerializeField]
+    [Header("Collection area padding")] [SerializeField]
     private float boxPadding = 30f;
 
-    [Header("Анимация")] [SerializeField] private float riseHeight = 90f; // на сколько поднимется
-    [SerializeField] private float riseDuration = 0.25f; // время подъёма
-    [SerializeField] private float flyDuration = 0.45f; // время полёта в коробку
+    [Header("Animation")] [SerializeField] private float riseHeight = 90f;
+    [SerializeField] private float riseDuration = 0.25f;
+    [SerializeField] private float flyDuration = 0.45f;
     [SerializeField] private AnimationCurve flyCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
     [SerializeField] private Vector3 endScale = new Vector3(0.3f, 0.3f, 1f);
 
-    [Header("Звук (необязательно)")] [SerializeField]
+    [Header("Optional audio")] [SerializeField]
     private string collectSound = "";
 
     private CursorHand hand;
@@ -38,7 +38,7 @@ public class MoneyDrop : MonoBehaviour
             Trigger();
         }
 
-        wasGrabbing = hand.isGrabbing;
+        wasGrabbing = hand.IsGrabbing;
     }
 
     private bool IsOverBox()
@@ -59,8 +59,8 @@ public class MoneyDrop : MonoBehaviour
 
         var grabable = GetComponent<DraggableItem>();
         if (grabable != null) grabable.enabled = false;
-        
-        if (hand != null && hand.grabbedObject == gameObject)
+
+        if (hand != null && hand.GrabbedObject == gameObject)
         {
             hand.Ungrab();
         }

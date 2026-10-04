@@ -1,21 +1,27 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 
-public class ClickRadius : MonoBehaviour
+[DefaultExecutionOrder(100)]
+public class ClickGrabSelector : MonoBehaviour
 {
-    [SerializeField] private float radius = 100f;
+    [SerializeField] private GrabArea grabArea;
     private readonly List<RaycastResult> hits = new();
 
-    private void Update()
+    private void LateUpdate()
     {
+        if (grabArea == null || !grabArea.isActiveAndEnabled)
+        {
+            return;
+        }
+
         if (Mouse.current == null || !Mouse.current.leftButton.wasPressedThisFrame)
         {
             return;
         }
 
-        if (CursorHand.Instance == null || CursorHand.Instance.isGrabbing)
+        if (CursorHand.Instance == null || CursorHand.Instance.IsGrabbing)
         {
             return;
         }
@@ -26,6 +32,18 @@ public class ClickRadius : MonoBehaviour
         }
 
         Vector2 mousePos = Mouse.current.position.ReadValue();
+
+        var hand = CursorHand.Instance;
+        var handCanvas = hand.GetComponentInParent<Canvas>();
+        if (handCanvas == null) return;
+
+        Camera handCamera = handCanvas.renderMode == RenderMode.ScreenSpaceOverlay
+            ? null
+            : handCanvas.worldCamera;
+
+        Vector2 grabPoint = RectTransformUtility.WorldToScreenPoint(
+            handCamera, hand.transform.position);
+
         var ped = new PointerEventData(EventSystem.current)
         {
             position = mousePos,
@@ -39,11 +57,11 @@ public class ClickRadius : MonoBehaviour
 
         MonoBehaviour nearest = null;
         RaycastResult nearestHit = default;
-        float best = radius;
+        float best = float.PositiveInfinity;
 
         foreach (var behaviour in FindObjectsByType<MonoBehaviour>())
         {
-            if (behaviour is not IGrabbable || behaviour is not IPointerDownHandler)
+            if (behaviour is not IGrabTarget)
             {
                 continue;
             }
@@ -59,10 +77,14 @@ public class ClickRadius : MonoBehaviour
             var canvas = behaviour.GetComponentInParent<Canvas>();
             if (canvas == null) continue;
 
+            // This area operates in the same Canvas coordinate space.
+            if (canvas.rootCanvas != handCanvas.rootCanvas) continue;
+            if (!grabArea.Overlaps(rt)) continue;
+
             Camera camera = canvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.worldCamera;
             Vector2 center = RectTransformUtility.WorldToScreenPoint(camera, rt.TransformPoint(rt.rect.center));
 
-            float distance = Vector2.Distance(mousePos, center);
+            float distance = Vector2.Distance(grabPoint, center);
             if (distance <= best)
             {
                 ped.position = center;

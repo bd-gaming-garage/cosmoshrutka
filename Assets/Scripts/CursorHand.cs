@@ -1,18 +1,22 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(RectTransform))]
 public class CursorHand : MonoBehaviour
 {
     public static CursorHand Instance;
 
-    public bool isGrabbing = false;
-    [SerializeField] public GameObject grabbedObject;
+    public GameObject GrabbedObject { get; private set; }
+    public bool IsGrabbing => GrabbedObject != null;
     private Vector2 _handPos;
     private float _catchUp;
     [SerializeField] private float catchUpTime = 0.15f;
 
+    [SerializeField] private Image handImage;
     [SerializeField] private GameObject steeringWheel;
+    [SerializeField] private Sprite notGrabbingSprite;
+    [SerializeField] private Sprite grabbingSprite;
 
     private void Awake()
     {
@@ -21,6 +25,8 @@ public class CursorHand : MonoBehaviour
 
     void LateUpdate()
     {
+        SetSprite(IsGrabbing);
+
         var mouse = Mouse.current;
         if (mouse == null)
         {
@@ -28,14 +34,14 @@ public class CursorHand : MonoBehaviour
             return;
         }
 
-        if (isGrabbing && mouse.leftButton.wasReleasedThisFrame)
+        if (IsGrabbing && mouse.leftButton.wasReleasedThisFrame)
         {
-            Ungrab();
+            Ungrab(GrabEndReason.Released);
         }
 
         Vector2 mousePos = mouse.position.ReadValue();
 
-        if (isGrabbing && grabbedObject == steeringWheel)
+        if (IsGrabbing && GrabbedObject == steeringWheel)
         {
             _handPos = transform.position;
             _catchUp = 1f;
@@ -54,28 +60,32 @@ public class CursorHand : MonoBehaviour
         }
     }
 
+    private void SetSprite(bool isGrabbing)
+    {
+        if (handImage == null) return;
+
+        Sprite sprite = isGrabbing ? grabbingSprite : notGrabbingSprite;
+        if (sprite != null && handImage.sprite != sprite)
+        {
+            handImage.sprite = sprite;
+        }
+    }
+
     public bool TryGrab(GameObject targetObject)
     {
-        if (isGrabbing || targetObject == null)
+        if (IsGrabbing || targetObject == null)
         {
             return false;
         }
 
-        grabbedObject = targetObject;
-        isGrabbing = true;
+        GrabbedObject = targetObject;
         return true;
     }
 
-    public void Ungrab()
+    public void Ungrab(GrabEndReason reason = GrabEndReason.Cancelled)
     {
-        if (!isGrabbing)
-        {
-            return;
-        }
-
-        GameObject releasedObject = grabbedObject;
-        isGrabbing = false;
-        grabbedObject = null;
+        GameObject releasedObject = GrabbedObject;
+        GrabbedObject = null;
 
         if (releasedObject == null)
         {
@@ -84,7 +94,17 @@ public class CursorHand : MonoBehaviour
 
         if (releasedObject.TryGetComponent<IGrabbable>(out var item))
         {
-            item.ReleaseGrab();
+            item.ReleaseGrab(reason);
         }
+    }
+
+    private void OnDisable()
+    {
+        Ungrab();
+    }
+
+    private void OnApplicationFocus(bool hasFocus)
+    {
+        if (!hasFocus) Ungrab();
     }
 }

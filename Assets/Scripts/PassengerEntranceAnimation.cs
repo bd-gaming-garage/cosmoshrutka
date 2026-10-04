@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class SpawnMove : MonoBehaviour
+public class PassengerEntranceAnimation : MonoBehaviour
 {
     [SerializeField] private float backOffset = 5f;
 
