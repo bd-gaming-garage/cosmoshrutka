@@ -600,6 +600,66 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 489688460}
   m_CullTransparentMesh: 1
+--- !u!1 &489688464
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 489688465}
+  - component: {fileID: 489688466}
+  m_Layer: 5
+  m_Name: GrabArea
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &489688465
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 489688464}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 874991035}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 37, y: -32.887}
+  m_SizeDelta: {x: 102, y: 286.427}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &489688466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 489688464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83119d3e3fa2e6147a05c59255e08dfb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GrabArea
+  points:
+  - {x: -38.999996, y: 139.28035}
+  - {x: 21.122536, y: 139.80482}
+  - {x: 41.914787, y: 98.5263}
+  - {x: 42.14647, y: 53.052597}
+  - {x: 36.482185, y: 18.19844}
+  - {x: 28.573242, y: 5.0565033}
+  - {x: -23.622028, y: 4.5321426}
+  - {x: -33.292862, y: 21.450752}
+  - {x: -45.524376, y: 53.052597}
+  - {x: -50.99996, y: 91.18467}
+  - {x: -42.670776, y: 111.34929}
 --- !u!1 &555453914
 GameObject:
   m_ObjectHideFlags: 0
@@ -1388,6 +1448,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 489688461}
+  - {fileID: 489688465}
   m_Father: {fileID: 733509987}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -1432,7 +1493,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 263046e2cff72714090a7959412a9005, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ClickRadius
-  radius: 40
+  grabArea: {fileID: 489688466}
 --- !u!1 &940951162
 GameObject:
   m_ObjectHideFlags: 0
