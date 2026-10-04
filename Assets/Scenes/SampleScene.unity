@@ -37864,10 +37864,11 @@ MonoBehaviour:
   idleClip: {fileID: 8300000, guid: b3d561b3af6314942877a16bbb9d6186, type: 3}
   lowRpmClip: {fileID: 8300000, guid: b984e92ed55144345abe04c0a09be520, type: 3}
   highRpmClip: {fileID: 8300000, guid: b992b5277d6fc7b42a9b95a84f3e4163, type: 3}
-  volume: 0.5
+  volume: 0.22
   fullRpmSpeed: 25
   response: 2
   throttleContribution: 0.3
+  loopCrossfade: 0.15
 --- !u!1 &681747903
 GameObject:
   m_ObjectHideFlags: 0
