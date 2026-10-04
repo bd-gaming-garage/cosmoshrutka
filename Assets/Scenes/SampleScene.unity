@@ -1761,11 +1761,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 263046e2cff72714090a7959412a9005, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ClickRadius
-<<<<<<< Updated upstream
   grabArea: {fileID: 489688466}
-=======
-  radius: 60
->>>>>>> Stashed changes
 --- !u!1 &940951162
 GameObject:
   m_ObjectHideFlags: 0
