@@ -131,7 +131,7 @@ public class SteeringWheel : GrabbableBehaviour
         float speed = Mathf.Abs(signedSpeed);
         const float stopSpeed = 0.01f;
 
-        if (speed <= stopSpeed || _maxAngle <= 0f)
+        if (_maxAngle <= 0f)
         {
             _angularVelocity = 0f;
             return;
@@ -139,9 +139,10 @@ public class SteeringWheel : GrabbableBehaviour
 
         float speedFactor = Mathf.InverseLerp(
             stopSpeed, Mathf.Max(fullReturnSpeed, 0.1f), speed);
-        float dt = Mathf.Max(deltaTime, 0f) * speedFactor;
+        float dt = Mathf.Max(deltaTime, 0f);
 
-        float force = -spring * (_currentAngle / _maxAngle) * Mathf.Deg2Rad;
+        float force = -spring * speedFactor *
+            (_currentAngle / _maxAngle) * Mathf.Deg2Rad;
         _angularVelocity += force * dt;
         _angularVelocity *= Mathf.Exp(-damping * dt);
 

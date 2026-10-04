@@ -1894,8 +1894,9 @@ MonoBehaviour:
   _grabAngle: 0
   _startGrabAngle: 0
   _radius: 300
-  spring: 100
+  spring: 2000
   damping: 5
+  fullReturnSpeed: 10
 --- !u!1 &1283649682
 GameObject:
   m_ObjectHideFlags: 0
@@ -2367,8 +2368,10 @@ MonoBehaviour:
   prefab: {fileID: 401201077075513079, guid: 0f2b29c5a90686b4db416e7ebf4a56b9, type: 3}
   parent: {fileID: 345553541}
   checkRadius: 1
-  passangersNotServed: 0
-  passangersServed: 0
+  passengersMax: 30
+  passengersNotServed: 0
+  passengersServed: 0
+  passengersServing: 0
 --- !u!1001 &1517662398
 PrefabInstance:
   m_ObjectHideFlags: 0
