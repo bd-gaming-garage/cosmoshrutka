@@ -2395,10 +2395,7 @@ MonoBehaviour:
   passengersNotServed: 0
   passengersServed: 0
   passengersServing: 0
-<<<<<<< Updated upstream
-=======
   spawnInterval: 1
->>>>>>> Stashed changes
 --- !u!1 &1650427079
 GameObject:
   m_ObjectHideFlags: 0
@@ -2638,14 +2635,6 @@ MonoBehaviour:
   drivePosition: {x: -3, y: -230}
   reversePosition: {x: 21, y: -369}
   snapSpeed: 4
-<<<<<<< Updated upstream
---- !u!224 &1965485991 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 6352528002627844687, guid: 952885c22ab9eed49b6a4b368b7bdadf, type: 3}
-  m_PrefabInstance: {fileID: 5369960895249818582}
-  m_PrefabAsset: {fileID: 0}
-=======
->>>>>>> Stashed changes
 --- !u!4 &1976281165 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6135996816784552294, guid: 6ec846dd13fb1e146816481df59e5471, type: 3}
