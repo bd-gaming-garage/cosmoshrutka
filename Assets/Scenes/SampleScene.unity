@@ -37665,6 +37665,7 @@ GameObject:
   - component: {fileID: 680305335}
   - component: {fileID: 680305334}
   - component: {fileID: 680305336}
+  - component: {fileID: 680305337}
   m_Layer: 0
   m_Name: Marshrutka
   m_TagString: Bus
@@ -37848,6 +37849,25 @@ MonoBehaviour:
   minImpactSpeed: 0.5
   heavyImpactSpeed: 6
   cooldown: 0.15
+--- !u!114 &680305337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 680305328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bc4280589064facb5865e592a1c8c62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MarshrutkaEngineAudio
+  idleClip: {fileID: 8300000, guid: b3d561b3af6314942877a16bbb9d6186, type: 3}
+  lowRpmClip: {fileID: 8300000, guid: b984e92ed55144345abe04c0a09be520, type: 3}
+  highRpmClip: {fileID: 8300000, guid: b992b5277d6fc7b42a9b95a84f3e4163, type: 3}
+  volume: 0.5
+  fullRpmSpeed: 25
+  response: 2
+  throttleContribution: 0.3
 --- !u!1 &681747903
 GameObject:
   m_ObjectHideFlags: 0
@@ -70677,6 +70697,16 @@ MonoBehaviour:
   - name: BusImpactHeavy
     clip: {fileID: 8300000, guid: 827f682e98c64fd0b7b931588ab7ba62, type: 3}
     volume: 0.763
+    pitch: 1
+    loop: 0
+  - name: PickCoin
+    clip: {fileID: 8300000, guid: df8e20f412ee4c8f84c7580cf7c2b1ca, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+  - name: DropCoin
+    clip: {fileID: 8300000, guid: 1c6b11e619294960ac3cb89e7b3cae6d, type: 3}
+    volume: 1
     pitch: 1
     loop: 0
 --- !u!1 &1284428149

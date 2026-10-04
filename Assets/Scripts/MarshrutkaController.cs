@@ -31,6 +31,8 @@ public class MarshrutkaController : MonoBehaviour
 
     public MarshrutkaGear CurrentGear { get; private set; } = MarshrutkaGear.Drive;
 
+    public float Throttle => _currentInput.Throttle;
+
     public bool CanChangeGear => isActiveAndEnabled && _body != null && 
                                  GetPlanarVelocity().sqrMagnitude <= maxGearChangeSpeed * maxGearChangeSpeed;
     

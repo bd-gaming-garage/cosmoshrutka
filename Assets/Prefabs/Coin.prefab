@@ -62,8 +62,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Grabable
   hand: {fileID: 0}
   value: 0
-  pickSound: 
-  dropSound: 
+  pickSound: PickCoin
+  dropSound: DropCoin
   banknotesParentTag: BanknotesParent
   friction: 4
   minVelocity: 20
