@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [RequireComponent(typeof(RectTransform))]
 public class PassengerHand : MonoBehaviour
@@ -13,10 +14,14 @@ public class PassengerHand : MonoBehaviour
     [SerializeField] private AnimationCurve backCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
     [Header("Optional audio")] [SerializeField]
-    private string grabSound = "";
+    private string enterSound = "PassengerEnter";
+
+    [FormerlySerializedAs("grabSound")]
+    [SerializeField] private string acceptChangeSound = "PassengerGoodChange";
 
     private RectTransform _rt;
     private PassengerEntranceAnimation _passengerEntranceAnimation;
+    private bool _entranceAnnounced;
     [SerializeField] private bool triggered;
 
     private void Awake()
@@ -35,6 +40,13 @@ public class PassengerHand : MonoBehaviour
         if (_passengerEntranceAnimation != null && !_passengerEntranceAnimation.IsComplete)
         {
             return;
+        }
+
+        if (!_entranceAnnounced)
+        {
+            _entranceAnnounced = true;
+            if (AudioManager.Instance != null)
+                AudioManager.Instance.PlayVoice(enterSound);
         }
 
         if (GetComponentInChildren<Banknote>(true) != null)
@@ -108,8 +120,8 @@ public class PassengerHand : MonoBehaviour
             hand.Ungrab();
         }
 
-        if (!string.IsNullOrEmpty(grabSound) && AudioManager.Instance != null)
-            AudioManager.Instance.Play(grabSound);
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.PlayVoice(acceptChangeSound);
 
         RectTransform coinRt = coin.GetComponent<RectTransform>();
 

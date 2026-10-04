@@ -17,8 +17,10 @@ public class AudioManager : MonoBehaviour
     }
 
     [SerializeField] private Sound[] sounds;
+    [SerializeField] private string startupMusic = "";
 
     private AudioSource musicSource;
+    private AudioSource voiceSource;
     private readonly List<AudioSource> sfxPool = new List<AudioSource>();
     private const int SFX_POOL_SIZE = 8;
 
@@ -49,12 +51,42 @@ public class AudioManager : MonoBehaviour
         musicSource = gameObject.AddComponent<AudioSource>();
         musicSource.playOnAwake = false;
 
+        voiceSource = gameObject.AddComponent<AudioSource>();
+        voiceSource.playOnAwake = false;
+        voiceSource.spatialBlend = 0f;
+
         for (int i = 0; i < SFX_POOL_SIZE; i++)
         {
             var src = gameObject.AddComponent<AudioSource>();
             src.playOnAwake = false;
             sfxPool.Add(src);
         }
+    }
+
+    private void Start()
+    {
+        if (Instance == this && !string.IsNullOrEmpty(startupMusic))
+            PlayMusic(startupMusic);
+    }
+
+    public void PlayVoice(string name)
+    {
+        if (string.IsNullOrEmpty(name) || voiceSource.isPlaying)
+            return;
+
+        if (!lookup.TryGetValue(name, out var sound))
+        {
+            Debug.LogWarning($"Sound '{name}' was not found");
+            return;
+        }
+
+        if (sound.clip == null) return;
+
+        voiceSource.clip = sound.clip;
+        voiceSource.volume = sound.volume;
+        voiceSource.pitch = sound.pitch;
+        voiceSource.loop = false;
+        voiceSource.Play();
     }
 
     public void Play(string name, float volumeMultiplier = 1f)
@@ -87,6 +119,9 @@ public class AudioManager : MonoBehaviour
         }
         if (musicSource.isPlaying && musicSource.clip == sound.clip)
             musicSource.Stop();
+
+        if (voiceSource.isPlaying && voiceSource.clip == sound.clip)
+            voiceSource.Stop();
     }
 
     public void PlayMusic(string name, float volumeMultiplier = 1f)

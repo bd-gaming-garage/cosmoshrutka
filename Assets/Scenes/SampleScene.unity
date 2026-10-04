@@ -70678,6 +70678,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48b07757d8713be42a638a87ff2f256a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AudioManager
+  startupMusic: GameOST
   sounds:
   - name: PickDollar
     clip: {fileID: 8300000, guid: 1bf2475ffcbf29640b2f875a1ba2b294, type: 3}
@@ -70709,6 +70710,21 @@ MonoBehaviour:
     volume: 1
     pitch: 1
     loop: 0
+  - name: PassengerEnter
+    clip: {fileID: 8300000, guid: a71a30802e5a442482471e54617b6bfb, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+  - name: PassengerGoodChange
+    clip: {fileID: 8300000, guid: 0dd9ecdb471f4e15bf393d5b05f023cc, type: 3}
+    volume: 1
+    pitch: 1
+    loop: 0
+  - name: GameOST
+    clip: {fileID: 8300000, guid: 359942af26c2dd54fa4defeff19e556e, type: 3}
+    volume: 0.25
+    pitch: 1
+    loop: 1
 --- !u!1 &1284428149
 GameObject:
   m_ObjectHideFlags: 0

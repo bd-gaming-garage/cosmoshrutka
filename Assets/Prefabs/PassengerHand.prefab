@@ -120,7 +120,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  grabSound: 
+  enterSound: PassengerEnter
+  acceptChangeSound: PassengerGoodChange
   triggered: 0
 --- !u!114 &5115700229792385096
 MonoBehaviour:
