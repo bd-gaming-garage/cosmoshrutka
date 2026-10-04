@@ -17,7 +17,8 @@ public class BusStop : MonoBehaviour
         if (_timer >= _tickTime)
         {
             _timer -= _tickTime;
-            
+
+            IncrementPassangers(_passengersPerTick);
         }
     }
 
@@ -42,6 +43,6 @@ public class BusStop : MonoBehaviour
 
     private void Trigger()
     {
-        IncrementPassangers(1);
+        _passengers = PassengerSpawner.Instance.IncreacePassangers(_passengers);
     }
 }
