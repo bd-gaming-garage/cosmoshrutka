@@ -1184,7 +1184,7 @@ MonoBehaviour:
   brakeDeceleration: 10
   rollingResistance: 0.3
   lateralGrip: 8
-  maxGearChangeSpeed: 0.2
+  maxGearChangeSpeed: 0.01
 --- !u!114 &680305335
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2367,7 +2367,8 @@ MonoBehaviour:
   prefab: {fileID: 401201077075513079, guid: 0f2b29c5a90686b4db416e7ebf4a56b9, type: 3}
   parent: {fileID: 345553541}
   checkRadius: 1
-  passangersN: 0
+  passangersNotServed: 0
+  passangersServed: 0
 --- !u!1001 &1517662398
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2595,6 +2596,7 @@ GameObject:
   - component: {fileID: 1774754510}
   - component: {fileID: 1774754512}
   - component: {fileID: 1774754511}
+  - component: {fileID: 1774754513}
   m_Layer: 5
   m_Name: Lever
   m_TagString: Untagged
@@ -2619,7 +2621,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -3, y: -230}
+  m_AnchoredPosition: {x: 21, y: -369}
   m_SizeDelta: {x: 78, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1774754511
@@ -2660,6 +2662,23 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1774754509}
   m_CullTransparentMesh: 1
+--- !u!114 &1774754513
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1774754509}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de4b5713795a4a5da72e9502dd0b4909, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GearLever
+  controls: {fileID: 680305335}
+  cursor: {fileID: 874991038}
+  drivePosition: {x: -3, y: -230}
+  reversePosition: {x: 21, y: -369}
+  snapSpeed: 4
 --- !u!1001 &1789310200
 PrefabInstance:
   m_ObjectHideFlags: 0

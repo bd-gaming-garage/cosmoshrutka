@@ -8,9 +8,15 @@ public class PlayerMarshrutkaControls : MonoBehaviour
     [SerializeField] private Pedal throttlePedal;
     [SerializeField] private Pedal brakePedal;
 
+    public bool HasMarshrutka => isActiveAndEnabled && marshrutka != null && marshrutka.isActiveAndEnabled;
+
+    public MarshrutkaGear CurrentGear => marshrutka != null ? marshrutka.CurrentGear : MarshrutkaGear.Drive;
+
+    public bool CanChangeGear => HasMarshrutka && marshrutka.CanChangeGear;
+
     public bool TrySelectGear(MarshrutkaGear gear)
     {
-        return marshrutka != null && marshrutka.SetInput(CreateInput(gear));
+        return HasMarshrutka && marshrutka.SetInput(CreateInput(gear));
     }
 
     public void SelectDrive()
@@ -34,13 +40,16 @@ public class PlayerMarshrutkaControls : MonoBehaviour
     private MarshrutkaInput CreateInput(MarshrutkaGear gear)
     {
         float steering = steeringWheel != null
-            ? steeringWheel.SteeringInput : 0f;
+            ? steeringWheel.SteeringInput
+            : 0f;
 
         float throttle = throttlePedal != null && throttlePedal.isActiveAndEnabled
-            ? throttlePedal.PressAmount : 0f;
+            ? throttlePedal.PressAmount
+            : 0f;
 
         float brake = brakePedal != null && brakePedal.isActiveAndEnabled
-            ? brakePedal.PressAmount : 0f;
+            ? brakePedal.PressAmount
+            : 0f;
 
         return new MarshrutkaInput(steering, throttle, brake, gear);
     }
@@ -51,6 +60,7 @@ public class PlayerMarshrutkaControls : MonoBehaviour
         {
             throttlePedal.ResetPress();
         }
+
         if (brakePedal != null)
         {
             brakePedal.ResetPress();

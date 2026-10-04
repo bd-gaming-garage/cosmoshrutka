@@ -7,14 +7,12 @@ public class Pedal : MonoBehaviour, IGrabbable, IPointerDownHandler, IPointerUpH
 {
     [SerializeField] private RectTransform rt;
     [SerializeField] private CursorHand cursor;
-    [SerializeField] [Min(1f)] private float maxPressDepth = 100f;
-    [SerializeField] [Min(1f)] private float returnSpeed = 400f;
+    [SerializeField] [Min(1f)] private float maxPressDepth = 75f;
+    [SerializeField] [Min(1f)] private float returnSpeed = 300f;
 
     public float PressAmount => rt == null
         ? 0f
-        : Mathf.Clamp01(
-            (_startAnchoredPos.y - rt.anchoredPosition.y) /
-            Mathf.Max(maxPressDepth, 1f));
+        : Mathf.Clamp01((_startAnchoredPos.y - rt.anchoredPosition.y) / Mathf.Max(maxPressDepth, 1f));
 
     private RectTransform _parentRt;
     private Camera _eventCamera;

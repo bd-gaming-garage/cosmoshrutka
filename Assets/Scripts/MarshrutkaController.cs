@@ -23,44 +23,44 @@ public class MarshrutkaController : MonoBehaviour
         
     [Header("Transmission")]
     [Tooltip("Maximum planar speed at which a gear change is allowed")] 
-    [SerializeField, Min(0f)] private float maxGearChangeSpeed = 0.2f;
+    [SerializeField, Min(0f)] private float maxGearChangeSpeed = 0.01f;
 
-    private Rigidbody body;
-    private MarshrutkaInput currentInput;
-    private float currentSteerAngle;
+    private Rigidbody _body;
+    private MarshrutkaInput _currentInput;
+    private float _currentSteerAngle;
 
     public MarshrutkaGear CurrentGear { get; private set; } = MarshrutkaGear.Drive;
 
-    public float SignedSpeed => body == null ? 0f : Vector3.Dot(body.linearVelocity, Forward);
+    public bool CanChangeGear => isActiveAndEnabled && _body != null && 
+                                 GetPlanarVelocity().sqrMagnitude <= maxGearChangeSpeed * maxGearChangeSpeed;
+    
+    public float SignedSpeed => _body == null ? 0f : Vector3.Dot(_body.linearVelocity, Forward);
 
-    private Vector3 Forward => body.rotation * Vector3.forward;
-    private Vector3 Right => body.rotation * Vector3.right;
+    private Vector3 Forward => _body.rotation * Vector3.forward;
+    private Vector3 Right => _body.rotation * Vector3.right;
 
     private void Awake()
     {
-        body = GetComponent<Rigidbody>();
-        body.useGravity = false;
-        body.constraints =
-            RigidbodyConstraints.FreezePositionY |
+        _body = GetComponent<Rigidbody>();
+        _body.useGravity = false;
+        _body.constraints =
             RigidbodyConstraints.FreezeRotationX |
+            RigidbodyConstraints.FreezePositionY |
             RigidbodyConstraints.FreezeRotationZ;
     }
 
     // Returns whether the requested gear was accepted.
     public bool SetInput(MarshrutkaInput input)
     {
-        bool validGear = input.Gear == MarshrutkaGear.Drive ||
-                            input.Gear == MarshrutkaGear.Reverse;
-
-        bool gearAccepted = validGear &&
-                            (input.Gear == CurrentGear || GetPlanarVelocity().magnitude <= maxGearChangeSpeed);
+        bool validGear = input.Gear == MarshrutkaGear.Drive || input.Gear == MarshrutkaGear.Reverse;
+        bool gearAccepted = validGear && (input.Gear == CurrentGear || CanChangeGear);
 
         if (gearAccepted)
         {
             CurrentGear = input.Gear;
         }
 
-        currentInput = new MarshrutkaInput(Mathf.Clamp(input.Steering, -1f, 1f),
+        _currentInput = new MarshrutkaInput(Mathf.Clamp(input.Steering, -1f, 1f),
             Mathf.Clamp01(input.Throttle), Mathf.Clamp01(input.Brake), CurrentGear);
 
         return gearAccepted;
@@ -70,8 +70,8 @@ public class MarshrutkaController : MonoBehaviour
     {
         float dt = Time.fixedDeltaTime;
 
-        currentSteerAngle = Mathf.MoveTowards(
-            currentSteerAngle, currentInput.Steering * maxSteerAngle, steerSpeed * dt);
+        _currentSteerAngle = Mathf.MoveTowards(
+            _currentSteerAngle, _currentInput.Steering * maxSteerAngle, steerSpeed * dt);
 
         ApplyResistance(dt);
         ApplyMotor(dt);
@@ -80,12 +80,12 @@ public class MarshrutkaController : MonoBehaviour
 
     private Vector3 GetPlanarVelocity()
     {
-        if (body == null)
+        if (_body == null)
         {
             return Vector3.zero;
         }
 
-        Vector3 velocity = body.linearVelocity;
+        Vector3 velocity = _body.linearVelocity;
         velocity.y = 0f;
         return velocity;
     }
@@ -97,20 +97,20 @@ public class MarshrutkaController : MonoBehaviour
         // Reduce lateral sliding without removing it instantly.
         float lateralSpeed = Vector3.Dot(velocity, Right);
         float gripFactor = 1f - Mathf.Exp(-lateralGrip * dt);
-        velocity -= Right * lateralSpeed * gripFactor;
+        velocity -= Right * (lateralSpeed * gripFactor);
 
         // Slow down to zero without reversing the velocity.
-        float deceleration = rollingResistance + brakeDeceleration * currentInput.Brake;
+        float deceleration = rollingResistance + brakeDeceleration * _currentInput.Brake;
 
         velocity = Vector3.MoveTowards(velocity, Vector3.zero, deceleration * dt);
 
-        body.linearVelocity = velocity;
+        _body.linearVelocity = velocity;
     }
 
     private void ApplyMotor(float dt)
     {
         // Braking takes priority over engine acceleration.
-        if (currentInput.Brake > 0f || currentInput.Throttle <= 0f)
+        if (_currentInput.Brake > 0f || _currentInput.Throttle <= 0f)
         {
             return;
         }
@@ -121,22 +121,22 @@ public class MarshrutkaController : MonoBehaviour
         float speedInGearDirection = SignedSpeed * direction;
         float availableAcceleration = Mathf.Max(0f, speedLimit - speedInGearDirection) / dt;
 
-        float motorAcceleration = Mathf.Min(acceleration * currentInput.Throttle, availableAcceleration);
+        float motorAcceleration = Mathf.Min(acceleration * _currentInput.Throttle, availableAcceleration);
 
-        body.AddForce(Forward * direction * motorAcceleration, ForceMode.Acceleration);
+        _body.AddForce(Forward * (direction * motorAcceleration), ForceMode.Acceleration);
     }
 
     private void ApplySteering()
     {
         // Signed speed reverses the yaw direction when reversing.
         float turnRate = SignedSpeed / Mathf.Max(wheelbase, 0.1f) *
-                            Mathf.Tan(currentSteerAngle * Mathf.Deg2Rad);
+                            Mathf.Tan(_currentSteerAngle * Mathf.Deg2Rad);
 
-        body.angularVelocity = Vector3.up * turnRate;
+        _body.angularVelocity = Vector3.up * turnRate;
     }
 
     private void OnDisable()
     {
-        currentInput = new MarshrutkaInput(0f, 0f, 0f, CurrentGear);
+        _currentInput = new MarshrutkaInput(0f, 0f, 0f, CurrentGear);
     }
 }
