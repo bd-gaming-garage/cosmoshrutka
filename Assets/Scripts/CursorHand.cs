@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(RectTransform))]
 public class CursorHand : MonoBehaviour
@@ -13,6 +14,8 @@ public class CursorHand : MonoBehaviour
     [SerializeField] private float catchUpTime = 0.15f;
 
     [SerializeField] private GameObject steeringWheel;
+    [SerializeField] private Sprite notGrabbingSprite;
+    [SerializeField] private Sprite grabbingSprite;
 
     private void Awake()
     {
@@ -21,6 +24,8 @@ public class CursorHand : MonoBehaviour
 
     void LateUpdate()
     {
+        setSprite(IsGrabbing);
+
         var mouse = Mouse.current;
         if (mouse == null)
         {
@@ -51,6 +56,21 @@ public class CursorHand : MonoBehaviour
         else
         {
             transform.position = mousePos;
+        }
+    }
+
+    private void setSprite(bool g) {
+        if (!g && notGrabbingSprite != null)
+        {
+            gameObject.GetComponent<Image>().sprite = notGrabbingSprite;
+            return;
+        }
+
+
+        if (g && grabbingSprite != null)
+        {
+            gameObject.GetComponent<Image>().sprite = grabbingSprite;
+            return;
         }
     }
 
