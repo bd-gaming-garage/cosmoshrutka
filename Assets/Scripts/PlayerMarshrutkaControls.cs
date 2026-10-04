@@ -31,6 +31,12 @@ public class PlayerMarshrutkaControls : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (steeringWheel != null)
+        {
+            float speed = HasMarshrutka ? marshrutka.SignedSpeed : 0f;
+            steeringWheel.UpdateSelfCentering(speed, Time.deltaTime);
+        }
+
         if (marshrutka != null)
         {
             marshrutka.SetInput(CreateInput(marshrutka.CurrentGear));

@@ -27,6 +27,9 @@ public class SteeringWheel : GrabbableBehaviour
     [SerializeField] private float spring = 1f;
     [SerializeField] private float damping = 1f;
 
+    [Tooltip("Vehicle speed in m/s at which self-centering reaches full strength")]
+    [SerializeField, Min(0.1f)] private float fullReturnSpeed = 10f;
+
     private Vector2 _lastDeltaPos;
 
     private float _angularVelocity = 0f;
@@ -47,14 +50,6 @@ public class SteeringWheel : GrabbableBehaviour
 
         if (!IsGrabbed)
         {
-            float force = -spring * (_currentAngle / _maxAngle) * Mathf.Deg2Rad;
-            _angularVelocity += force * Time.deltaTime;
-            _angularVelocity *= Mathf.Exp(-damping * Time.deltaTime);
-
-            _currentAngle += _angularVelocity * Mathf.Rad2Deg * Time.deltaTime;
-            _currentAngle = Mathf.Clamp(_currentAngle, -_maxAngle, _maxAngle);
-
-            wheelrt.localRotation = Quaternion.Euler(0, 0, _currentAngle);
             return;
         }
 
@@ -127,6 +122,34 @@ public class SteeringWheel : GrabbableBehaviour
     {
         _angularVelocity = 0f;
         _lastDeltaPos = Vector2.zero;
+    }
+
+    public void UpdateSelfCentering(float signedSpeed, float deltaTime)
+    {
+        if (!isActiveAndEnabled || IsGrabbed) return;
+
+        float speed = Mathf.Abs(signedSpeed);
+        const float stopSpeed = 0.01f;
+
+        if (speed <= stopSpeed || _maxAngle <= 0f)
+        {
+            _angularVelocity = 0f;
+            return;
+        }
+
+        float speedFactor = Mathf.InverseLerp(
+            stopSpeed, Mathf.Max(fullReturnSpeed, 0.1f), speed);
+        float dt = Mathf.Max(deltaTime, 0f) * speedFactor;
+
+        float force = -spring * (_currentAngle / _maxAngle) * Mathf.Deg2Rad;
+        _angularVelocity += force * dt;
+        _angularVelocity *= Mathf.Exp(-damping * dt);
+
+        _currentAngle = Mathf.Clamp(
+            _currentAngle + _angularVelocity * Mathf.Rad2Deg * dt,
+            -_maxAngle, _maxAngle);
+
+        wheelrt.localRotation = Quaternion.Euler(0f, 0f, _currentAngle);
     }
 
     public float SteeringInput => _maxAngle > 0f
