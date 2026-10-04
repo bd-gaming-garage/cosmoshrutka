@@ -1,7 +1,4 @@
-namespace Interaction.Scripts
+public interface IGrabbable
 {
-    public interface IGrabbable
-    {
-        void ReleaseGrab();
-    }
+    void ReleaseGrab();
 }

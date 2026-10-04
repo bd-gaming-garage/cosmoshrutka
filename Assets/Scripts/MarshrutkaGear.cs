@@ -1,9 +1,5 @@
-namespace Marshrutka.Scripts
+public enum MarshrutkaGear
 {
-
-    public enum MarshrutkaGear
-    {
-        Drive,
-        Reverse
-    }
+    Drive,
+    Reverse
 }

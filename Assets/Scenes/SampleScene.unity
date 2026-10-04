@@ -940,8 +940,9 @@ GameObject:
   - component: {fileID: 680305332}
   - component: {fileID: 680305331}
   - component: {fileID: 680305330}
-  - component: {fileID: 680305334}
   - component: {fileID: 680305333}
+  - component: {fileID: 680305335}
+  - component: {fileID: 680305334}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -1079,21 +1080,33 @@ MonoBehaviour:
   m_GameObject: {fileID: 680305328}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 876de0f5aab01174b8a656bee4cde6e7, type: 3}
+  m_Script: {fileID: 11500000, guid: 7e5c23e3e61d4566bb971aa8fbaad959, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BusController
-  maxMotorTorque: 3000
-  maxSpeed: 15
+  m_EditorClassIdentifier: Assembly-CSharp::Marshrutka.Scripts.MarshrutkaController
+  acceleration: 5
+  maxForwardSpeed: 15
+  maxReverseSpeed: 5
   maxSteerAngle: 30
-  steerSpeed: 5
-  brakeTorque: 5000
-  cameraPivot: {fileID: 1402908567}
-  useGravity: 0
-  hardMaxSpeed: 20
-  _rb: {fileID: 0}
-  _throttleInput: 0
-  _steerInput: 0
-  _currentSteer: 0
+  steerSpeed: 90
+  wheelbase: 3
+  brakeDeceleration: 10
+  rollingResistance: 0.3
+  lateralGrip: 8
+  maxGearChangeSpeed: 0.2
+--- !u!114 &680305335
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 680305328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a879e6c3d9c5485d96cd1762fbe74a9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Player.Scripts.PlayerMarshrutkaControls
+  marshrutka: {fileID: 680305334}
+  steeringWheel: {fileID: 1213898254}
 --- !u!1 &733509983
 GameObject:
   m_ObjectHideFlags: 0
@@ -1379,8 +1392,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3ec3dad54676fe4682ff6d330258842, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CursorHand
-  isGrabbing: 0
-  grabbedObject: {fileID: 0}
   catchUpTime: 0.15
   steeringWheel: {fileID: 1213898250}
 --- !u!114 &874991039
