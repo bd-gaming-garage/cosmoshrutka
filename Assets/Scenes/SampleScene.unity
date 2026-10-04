@@ -814,7 +814,7 @@ GameObject:
   - component: {fileID: 624958568}
   - component: {fileID: 624958570}
   m_Layer: 5
-  m_Name: Image
+  m_Name: ThrottlePedal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -836,7 +836,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -312.6, y: -369.2}
+  m_AnchoredPosition: {x: -312.6, y: -400}
   m_SizeDelta: {x: 100, y: 74.9799}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &624958568
@@ -889,11 +889,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74dcf3dbaa4da8a4b8fb828f8ead5daa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Pedal
-  _rt: {fileID: 0}
+  rt: {fileID: 0}
   cursor: {fileID: 874991038}
   maxPressDepth: 100
   returnSpeed: 400
-  pressAmount: 0
 --- !u!1 &657803320
 GameObject:
   m_ObjectHideFlags: 0
@@ -1037,7 +1036,7 @@ GameObject:
   - component: {fileID: 680305335}
   - component: {fileID: 680305334}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: Marshrutka
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1200,8 +1199,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Player.Scripts.PlayerMarshrutkaControls
   marshrutka: {fileID: 680305334}
   steeringWheel: {fileID: 1213898254}
-  throttle: 0
-  brake: 0
+  throttlePedal: {fileID: 624958570}
+  brakePedal: {fileID: 1200591445}
 --- !u!1 &733509983
 GameObject:
   m_ObjectHideFlags: 0
@@ -1715,7 +1714,7 @@ GameObject:
   - component: {fileID: 1200591443}
   - component: {fileID: 1200591445}
   m_Layer: 5
-  m_Name: Image (1)
+  m_Name: BrakePedal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1737,7 +1736,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -582.4, y: -369.2}
+  m_AnchoredPosition: {x: -582.4, y: -400}
   m_SizeDelta: {x: 100, y: 74.9799}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1200591443
@@ -1790,11 +1789,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74dcf3dbaa4da8a4b8fb828f8ead5daa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Pedal
-  _rt: {fileID: 0}
+  rt: {fileID: 0}
   cursor: {fileID: 874991038}
   maxPressDepth: 100
   returnSpeed: 400
-  pressAmount: 0
 --- !u!1 &1204601164
 GameObject:
   m_ObjectHideFlags: 0
@@ -2369,6 +2367,7 @@ MonoBehaviour:
   prefab: {fileID: 401201077075513079, guid: 0f2b29c5a90686b4db416e7ebf4a56b9, type: 3}
   parent: {fileID: 345553541}
   checkRadius: 1
+  passangersN: 0
 --- !u!1001 &1517662398
 PrefabInstance:
   m_ObjectHideFlags: 0

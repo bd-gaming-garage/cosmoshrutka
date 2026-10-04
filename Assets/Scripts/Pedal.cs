@@ -1,99 +1,137 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
-public class Pedal : MonoBehaviour
+[RequireComponent(typeof(RectTransform))]
+public class Pedal : MonoBehaviour, IGrabbable, IPointerDownHandler, IPointerUpHandler
 {
-    [SerializeField] private RectTransform _rt;
+    [SerializeField] private RectTransform rt;
     [SerializeField] private CursorHand cursor;
-    [SerializeField] private float maxPressDepth = 100f;
-    [SerializeField] private float returnSpeed = 400f;
+    [SerializeField] [Min(1f)] private float maxPressDepth = 100f;
+    [SerializeField] [Min(1f)] private float returnSpeed = 400f;
 
-    [Range(0f, 1f)]
-    public float pressAmount = 0f;
+    public float PressAmount => rt == null
+        ? 0f
+        : Mathf.Clamp01(
+            (_startAnchoredPos.y - rt.anchoredPosition.y) /
+            Mathf.Max(maxPressDepth, 1f));
 
+    private RectTransform _parentRt;
+    private Camera _eventCamera;
     private Vector2 _startAnchoredPos;
-    private Vector2 _grabOffset;
+    private float _grabOffsetY;
     private bool _isGrabbed;
 
     private void Awake()
     {
-        if (_rt == null) _rt = GetComponent<RectTransform>();
-        _startAnchoredPos = _rt.anchoredPosition;
+        if (rt == null)
+        {
+            rt = GetComponent<RectTransform>();
+        }
+
+        _parentRt = rt.parent as RectTransform;
+        _startAnchoredPos = rt.anchoredPosition;
     }
 
     private void Update()
     {
-        if (_isGrabbed) return;
-
-        if (_rt.anchoredPosition != _startAnchoredPos)
+        if (_isGrabbed)
         {
-            _rt.anchoredPosition = Vector2.MoveTowards(
-                _rt.anchoredPosition,
+            var mouse = Mouse.current;
+            if (cursor == null || cursor.GrabbedObject != gameObject ||
+                mouse == null || !mouse.leftButton.isPressed)
+            {
+                EndGrab();
+            }
+            else if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                         _parentRt, mouse.position.ReadValue(),
+                         _eventCamera, out Vector2 pointer))
+            {
+                float y = Mathf.Clamp(
+                    pointer.y + _grabOffsetY,
+                    _startAnchoredPos.y - Mathf.Max(maxPressDepth, 1f),
+                    _startAnchoredPos.y);
+
+                rt.anchoredPosition = new Vector2(_startAnchoredPos.x, y);
+            }
+        }
+
+        if (!_isGrabbed)
+        {
+            rt.anchoredPosition = Vector2.MoveTowards(
+                rt.anchoredPosition,
                 _startAnchoredPos,
-                returnSpeed * Time.deltaTime);
-
-            UpdatePressAmount();
+                Mathf.Max(returnSpeed, 1f) * Time.deltaTime);
         }
-        else
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if (!isActiveAndEnabled ||
+            eventData.button != PointerEventData.InputButton.Left ||
+            _parentRt == null)
         {
-            pressAmount = 0f;
+            return;
         }
-    }
 
-    private void LateUpdate()
-    {
-        if (!_isGrabbed) return;
-        if (cursor == null) return;
+        if (!RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                _parentRt, eventData.position, eventData.pressEventCamera,
+                out Vector2 pointer))
+        {
+            return;
+        }
 
-        Vector2 worldHand = cursor.transform.position;
-        var parentRt = _rt.parent as RectTransform;
-        if (parentRt == null) return;
-
-        Vector2 localHand = parentRt.InverseTransformPoint(worldHand);
-        Vector2 target = _rt.anchoredPosition;
-
-        target.y = Mathf.Clamp(
-            localHand.y + _grabOffset.y,
-            _startAnchoredPos.y - maxPressDepth,
-            _startAnchoredPos.y);
-
-        _rt.anchoredPosition = target;
-        UpdatePressAmount();
-    }
-
-    private void UpdatePressAmount()
-    {
-        float depth = _startAnchoredPos.y - _rt.anchoredPosition.y;
-        pressAmount = Mathf.Clamp01(depth / maxPressDepth);
-    }
-
-    private void OnMouseDown()
-    {
         if (cursor == null) cursor = CursorHand.Instance;
-        if (cursor == null) return;
-        if (!cursor.TryGrab(gameObject)) return;
+        if (cursor == null || !cursor.TryGrab(gameObject)) return;
 
+        _eventCamera = eventData.pressEventCamera;
+        _grabOffsetY = rt.anchoredPosition.y - pointer.y;
         _isGrabbed = true;
-
-        var parentRt = _rt.parent as RectTransform;
-        if (parentRt == null) return;
-
-        Vector2 screen = Mouse.current.position.ReadValue();
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            parentRt, screen, null, out Vector2 localHand);
-
-        _grabOffset = _rt.anchoredPosition - localHand;
     }
 
-    private void OnMouseUp()
+    public void OnPointerUp(PointerEventData eventData)
     {
-        if (cursor == null) return;
-        if (cursor.GrabbedObject == gameObject)
-            cursor.Ungrab();
+        if (eventData.button == PointerEventData.InputButton.Left)
+        {
+            EndGrab();
+        }
     }
 
     public void ReleaseGrab()
     {
         _isGrabbed = false;
+    }
+
+    private void EndGrab()
+    {
+        if (cursor != null && cursor.GrabbedObject == gameObject)
+        {
+            cursor.Ungrab();
+        }
+
+        ReleaseGrab();
+    }
+
+    public void ResetPress()
+    {
+        EndGrab();
+
+        if (rt != null)
+        {
+            rt.anchoredPosition = _startAnchoredPos;
+        }
+    }
+
+    private void OnDisable()
+    {
+        ResetPress();
+    }
+
+    private void OnApplicationFocus(bool hasFocus)
+    {
+        if (!hasFocus)
+        {
+            ResetPress();
+        }
     }
 }
