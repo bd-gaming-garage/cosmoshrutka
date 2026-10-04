@@ -37664,6 +37664,7 @@ GameObject:
   - component: {fileID: 680305333}
   - component: {fileID: 680305335}
   - component: {fileID: 680305334}
+  - component: {fileID: 680305336}
   m_Layer: 0
   m_Name: Marshrutka
   m_TagString: Bus
@@ -37830,6 +37831,23 @@ MonoBehaviour:
   steeringWheel: {fileID: 1213898254}
   throttlePedal: {fileID: 624958570}
   brakePedal: {fileID: 1200591445}
+--- !u!114 &680305336
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 680305328}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1571c1a85e8c4b518598f2daf2b8503a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::MarshrutkaCollisionAudio
+  lightImpactSound: BusImpactLight
+  heavyImpactSound: BusImpactHeavy
+  minImpactSpeed: 0.5
+  heavyImpactSpeed: 6
+  cooldown: 0.15
 --- !u!1 &681747903
 GameObject:
   m_ObjectHideFlags: 0
