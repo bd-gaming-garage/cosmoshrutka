@@ -1416,7 +1416,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CursorHand
   catchUpTime: 0.15
-  handImage: {fileID: 0}
+  handImage: {fileID: 489688462}
   steeringWheel: {fileID: 1213898250}
   notGrabbingSprite: {fileID: 21300000, guid: a38d5085339b6ba478c905e663f1a508, type: 3}
   grabbingSprite: {fileID: 21300000, guid: 7876235ba9578ff4a867fa4b2fc5c8c7, type: 3}
@@ -2021,12 +2021,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0963112a0c0473b4db1d67b8efff42ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridRenderer
-  cellSize: 1
-  halfCount: 50
-  color: {r: 1, g: 1, b: 1, a: 0.15}
-  axisColorX: {r: 1, g: 0.3, b: 0.3, a: 0.6}
-  axisColorZ: {r: 0.3, g: 0.5, b: 1, a: 0.6}
-  lineMaterial: {fileID: 0}
 --- !u!1 &1367140825
 GameObject:
   m_ObjectHideFlags: 0
